@@ -1,0 +1,18 @@
+.footer_container{
+    background-color: white;
+    padding: 20px;
+    display:  flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: auto;
+    span{
+        font-size: 20px;
+    }
+    .icons_footer_container{
+        svg{
+            font-size: 30px;
+            margin: 0px 10px;
+        }
+    }
+}

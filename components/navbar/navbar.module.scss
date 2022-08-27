@@ -1,0 +1,30 @@
+$primary_color: #ff0d4a;
+
+.Navbar_container{
+    display: flex;
+    padding: 10px;
+    background-color: white;
+    .Navbar_logo_container{
+        display: flex;
+        align-items: center;
+        span{
+            margin-left: 5px;
+            font-weight: 700;
+            font-size: 20px;
+            color: $primary_color;
+        }
+    }
+    .Navbar_input_search_container{
+        outline: 1px solid rgb(207, 207, 207);
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+        padding: 5px;
+        input[type='text']{
+            border: none;
+            outline: none;
+           
+        }
+    }
+}
