@@ -16,6 +16,7 @@ import Image from 'next/image'
 const Navbar = () => {
   return (
     <div className={styles.Navbar_container}>
+      <div className={styles.Navbar_firstChild}>
         <div className={styles.Navbar_logo_container}>
             <Image 
             src={Logo} 
@@ -29,9 +30,15 @@ const Navbar = () => {
             <SearchRoundedIcon/>
             <input type="text" name="" id="" placeholder='Buscar Negocio'/>
         </div>
+        <div className={styles.Navbar_icons_container}>
         <HomeRoundedIcon/>
         <MenuRoundedIcon/>
         <NotificationsRoundedIcon/>
+        </div>
+      </div>
+      <div className={styles.Navbar_secondChild}>
+
+      </div>
     </div>
   )
 }
