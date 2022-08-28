@@ -2,7 +2,10 @@ $primary_color: #ff0d4a;
 @mixin content_scale {
     padding-left: 20px;
 }
-
+@mixin button_life{
+    transform: scale(0.98);
+    cursor: pointer;
+}
 
 .info_negocio_container{
     display: grid;
@@ -41,10 +44,9 @@ $primary_color: #ff0d4a;
                 width: 100%;
                 justify-content: center;
                 font-size: 18px;
-                cursor: pointer;
                 transition: .3s all;
                 &:hover{
-                    transform: scale(.98);
+                    @include button_life;
                 }
             }
         }
@@ -53,6 +55,12 @@ $primary_color: #ff0d4a;
             border-radius: 10px;
             .banner_text{
                 padding: 10px;
+                span{
+                    color: gray;
+                }
+                p{
+                    margin-top: 10px;
+                }
             }
             h2{
                 margin: 0;
@@ -68,6 +76,10 @@ $primary_color: #ff0d4a;
                 border: none;
                 border-radius: 10px;
                 font-size: 17px;
+                transition: .3s all;
+                &:hover{
+                    @include button_life;
+                }
                 svg{
                     margin-right: 10px
                 }
@@ -175,10 +187,9 @@ $primary_color: #ff0d4a;
                 width: 100%;
                 font-size: 15px;
                 font-weight: 600;
-                cursor: pointer;
                 transition: .3s all;
                 &:hover{
-                    transform: scale(.98);
+                    @include button_life;
                 }
                 svg{
                     margin-right: 15px;

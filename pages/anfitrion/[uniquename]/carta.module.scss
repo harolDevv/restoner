@@ -1,0 +1,44 @@
+$primary_color: #ff0d4a;
+
+.carta_father_container{
+    display: grid;
+    grid-template-columns: .4fr 1fr .5fr;
+    padding: 20px;
+    gap: 20px;
+    position: relative;
+    > section {
+        background-color: white;
+        border-radius: 10px;
+    }
+    .header_section{
+        grid-template-rows: 1fr 1fr;
+        background-color: #e6e6e6;
+        div{
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px;
+            h4{
+                margin: 0;
+                margin-bottom: 5px;
+            }
+        }
+        button{
+            background-color: $primary_color;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            font-size: 17px;
+            transition: .3s all;
+            cursor: pointer;
+            &:hover{
+                transform: scale(.98);
+            }
+        }
+    }
+}

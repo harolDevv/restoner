@@ -7,7 +7,7 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-
+import Swal from 'sweetalert2'
 //multimedia
 import Logo from '../../public/images/Restoner.png'
 import Image from 'next/image'
@@ -31,9 +31,39 @@ const Navbar = () => {
             <input type="text" name="" id="" placeholder='Buscar Negocio'/>
         </div>
         <div className={styles.Navbar_icons_container}>
-        <HomeRoundedIcon/>
-        <MenuRoundedIcon/>
-        <NotificationsRoundedIcon/>
+        <HomeRoundedIcon onClick={ () =>
+          Swal.fire({
+            position: 'top-end',
+            icon:'warning',
+            title: 'Oops...',
+            showConfirmButton: false,
+            timer: 1900,
+            text: 'Restoner sigue trabajando en esta funcionalidad :(',
+            iconColor: '#ff0d4a'
+          })
+        }/>
+        <MenuRoundedIcon onClick={ () =>
+          Swal.fire({
+            position: 'top-end',
+            icon:'warning',
+            title: 'Oops...',
+            showConfirmButton: false,
+            timer: 1900,
+            text: 'Restoner sigue trabajando en esta funcionalidad :(',
+            iconColor: '#ff0d4a'
+          })
+        }/>
+        <NotificationsRoundedIcon onClick={ () =>
+          Swal.fire({
+            position: 'top-end',
+            icon:'warning',
+            title: 'Oops...',
+            showConfirmButton: false,
+            timer: 1900,
+            text: 'Restoner sigue trabajando en esta funcionalidad :(',
+            iconColor: '#ff0d4a'
+          })
+        }/>
         </div>
       </div>
       <div className={styles.Navbar_secondChild}>

@@ -11,9 +11,6 @@ const infoNegocioRestoner = createSlice({
         getInfo : (state,action) =>{
             state.infoNegocio = action.payload
         }
-        // removeProducts: (state, action) => {
-        //     state.infoNegocio = state.canasta.filter(e => e != action.payload)
-        // },
     }
 })
 

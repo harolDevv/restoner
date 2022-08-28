@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getInfoNegotion } from '../../../redux/actions/infoNegotionAction'
 import styles from './index.module.scss'
@@ -22,21 +22,23 @@ import QrCodeScannerRoundedIcon from '@mui/icons-material/QrCodeScannerRounded';
 
 const days = ['Lunes' , 'Martes' , 'Miercoles' , 'Jueves' , 'Viernes' , 'Sabado' , 'Domingo']
 
-
 const ProductInfo = () => {
     const { query: {uniquename} } = useRouter()
     const dispatch = useDispatch()
-    console.log(uniquename);
-    // info del negocio en el state de redux
+    const [mostrarAlerta, setMostrarAlerta] = useState(true)
+
+    // useSelectors para los state de redux
     const {data} = useSelector(state => state.infoNegocio.infoNegocio)
 
-    console.log(data);
+
     useEffect(() => {
-        console.log(uniquename);
         if(uniquename){
                 dispatch(getInfoNegotion(uniquename))
             }
         }, [uniquename])
+    
+    
+        //obetner las categorias
     
   return (
     <div className={styles.info_negocio_container}>
@@ -58,6 +60,7 @@ const ProductInfo = () => {
                 </div>
                 <div className={styles.banner_text}>
                 <h2>{data?.name}</h2>
+                <span>{data?.uniquename}</span>
                 <p>{data?.description}</p>
                 <button type='button' className={styles.banner_button}>
                     <QrCodeScannerRoundedIcon/>
