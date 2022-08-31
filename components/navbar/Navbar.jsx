@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 //modules styles
 import styles from './navbar.module.scss'
+
+import IconProfile from '../iconProfile/IconProfile';
 
 //iconos
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
@@ -11,9 +13,13 @@ import Swal from 'sweetalert2'
 //multimedia
 import Logo from '../../public/images/Restoner.png'
 import Image from 'next/image'
+import ModalAlert from '../modalAlert/ModalAlert';
 
 
 const Navbar = () => {
+
+  const [ mostrarModalSesion , setMostrarModalSesion ]  = useState(false)
+
   return (
     <div className={styles.Navbar_container}>
       <div className={styles.Navbar_firstChild}>
@@ -67,8 +73,11 @@ const Navbar = () => {
         </div>
       </div>
       <div className={styles.Navbar_secondChild}>
-
+          <IconProfile setMostrarModalSesion={setMostrarModalSesion}/>
       </div>
+      {
+        mostrarModalSesion  && <ModalAlert setMostrarModalSesion={setMostrarModalSesion}/>
+      }
     </div>
   )
 }

@@ -1,0 +1,95 @@
+$primary_color: #ff0d4a;
+@mixin button_life{
+    &:hover{
+        transform: scale(0.99);
+        cursor: pointer;
+    }
+}
+.container_alert{
+    background-color: #0000009e;
+    position: fixed;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    div {
+      
+    }
+    .modal_sesion{
+        h3{
+            font-size: 20px;
+        }
+        background-color: #fff;
+        width: 442px;
+        display: flex;
+        align-items:center;
+        justify-content:center;
+        flex-direction: column;
+        padding: 52px 20px;
+        padding-top: 20px;
+        border-radius:16px;
+        position: relative;
+        .close_modal{
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            color: $primary_color;
+        }
+        .password_container{
+        border: 1px solid  #bdbdbd;
+        border-radius: 10px;
+        display: flex;
+        padding: 10px;
+        width: 100%;
+            input{
+                border: none;
+                outline: none;
+                width: 100%;
+                margin-left: 10px;
+            }
+        }
+        .button_registrarme{
+            margin: 10px;
+            color: $primary_color;
+            width: 100%;
+            background-color: white;
+            border: none;
+            font-size: 20px;
+            padding: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+        }  
+        .button_ingresar{
+            color: white;
+            width: 100%;
+            background-color: $primary_color;
+            border: none;
+            font-size: 20px;
+            padding: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .3s all;
+            
+            @include button_life;
+        } 
+    }
+}
+
+
+.inputNumber{
+    margin-bottom: 10px;
+    height: 46px;
+    input {
+        height: 100% !important;
+        width:  100% !important;
+        border-radius: 10px !important;
+    }
+    .flag-dropdown{
+        background-color: red;
+    }
+}

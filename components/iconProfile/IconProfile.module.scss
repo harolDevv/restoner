@@ -1,0 +1,31 @@
+.icon_profile_container{
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    width: auto;
+    height: auto;
+    position: relative;
+    cursor: pointer;
+    span{
+        margin-left: 10px;
+    }
+    .modal_iniciar_sesion{
+        display: flex;
+        position: absolute;
+        background-color: white;
+        border: 1px solid  #E8E8E8; 
+        z-index: 1;
+        width: max-content;
+        right: 0px;
+        bottom: -55px;
+        border-radius: 16px;
+        padding: 10px;
+        align-items: center;
+        svg{
+            margin-right: 10px;
+        }
+        p{
+            margin: 0;
+        }
+    }
+}

@@ -4,6 +4,7 @@ $primary_color: #ff0d4a;
     display: flex;
     padding: 10px;
     background-color: white;
+    justify-content: space-between;
     .Navbar_firstChild{
         display: flex;
     }
@@ -15,6 +16,7 @@ $primary_color: #ff0d4a;
             font-weight: 700;
             font-size: 20px;
             color: $primary_color;
+            font-family: 'Poppins', sans-serif;;
         }
     }
     .Navbar_input_search_container{
