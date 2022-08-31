@@ -16,9 +16,6 @@ $primary_color: #ff0d4a;
     display:flex;
     align-items:center;
     justify-content:center;
-    div {
-      
-    }
     .modal_sesion{
         h3{
             font-size: 20px;
@@ -74,9 +71,108 @@ $primary_color: #ff0d4a;
             border-radius: 10px;
             cursor: pointer;
             transition: .3s all;
-            
+            &:disabled{
+                background-color: #555455
+            }
             @include button_life;
         } 
+    }
+
+    .modal_register{
+        background-color: #fff;
+        width: 442px;
+        display: flex;
+        align-items:center;
+        justify-content:center;
+        flex-direction: column;
+        padding: 20px;
+        padding-top: 20px;
+        border-radius:16px;
+        position: relative;
+        .close_modal{
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            color: $primary_color;
+        }
+        .step_2{
+            input{
+                padding: 10px;
+                border-radius: 10px;
+                border: none;
+                border: 1px solid  #bdbdbd;
+                margin: 20px 0px ;
+                outline: none;
+                text-align: center;
+                width: 100%;
+                letter-spacing: 5px;
+            }
+            button{
+                color: white;
+                width: 100%;
+                background-color: $primary_color;
+                border: none;
+                font-size: 20px;
+                padding: 8px;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: .3s all;
+                @include button_life;
+            }
+        }
+        .step_3{
+            div{
+                width: 100%;
+                margin: 10px 0px;
+                border: 1px solid  #bdbdbd;
+                border-radius: 10px;
+                padding: 10px;
+                display: flex;
+                svg{
+                    margin-right: 5px;
+                }
+                input{
+                    width: 100%;
+                    background-color: transparent;
+                    border: none;
+                    outline: none;
+                }
+            }
+        }
+        > div { 
+            width: 100%;
+        }
+        .button_registrarme{
+            margin: 10px;
+            color: $primary_color;
+            width: 100%;
+            background-color: white;
+            border: 1px solid $primary_color;
+            font-size: 20px;
+            padding: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+        }  
+        .button_ingresar{
+            color: white;
+            width: 100%;
+            background-color: $primary_color;
+            border: none;
+            font-size: 20px;
+            padding: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: .3s all;
+            margin: 0px 10px;
+            &:disabled{
+                background-color: #555455
+            }
+            @include button_life;
+        } 
+        .buttons_multi_container{
+            display: flex;
+        }
     }
 }
 
@@ -90,6 +186,7 @@ $primary_color: #ff0d4a;
         border-radius: 10px !important;
     }
     .flag-dropdown{
-        background-color: red;
+        border-right: none;
+        border-radius: 10px 0px 0px 10px;
     }
 }
