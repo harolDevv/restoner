@@ -17,6 +17,7 @@ import { apiRecuperar, apiRegistro } from '../../axios';
 import { getAllInfoUser } from '../../redux/actions/usuarioAction';
 import { useDispatch } from 'react-redux';
 import { changeMostrar } from '../../redux/reducers/modalAlertReducer';
+import Swal from 'sweetalert2';
 
 
 
@@ -38,6 +39,13 @@ const ModalAlert = ({setMostrarModalSesion}) => {
   })
   const [formRecuperarCode, setFormRecuperarCode] = useState({
     code: '',
+  })
+  const [formRecuperarCuenta, setFormRecuperarCuenta] = useState({
+    newpassword: '',
+    repeatnewpassword: '' ,
+    phoneRegister:'',
+    country: '',
+    code:'',
   })
   
   const [Error , setError] = useState('')
@@ -188,12 +196,6 @@ const handleNextStep3 = async () => {
     }
   }
   const handleNextStepRecuperar2 =  async() => {
-    if(contadorRecuperar < 3){
-      setContadorRecuperar(contadorRecuperar + 1)
-    } else {
-      alert('Cambie la password')
-      setMostrarModalSesion(false)
-    }
     //Obtencion de obj para creacon de cuenta == Numero telefonico
     if(formRecuperarCode.code){
       console.log('Esta funcion se ejecuto , Codigo');
@@ -202,18 +204,73 @@ const handleNextStep3 = async () => {
       }
         try {
               const respuesta  = await apiRecuperar.put(`http://c-registro-authenticacion.restoner-api.fun/v1/recover/${formRecuperar.phoneRegister}/${formRecuperar.country}` , objCode)
+
+              if(respuesta){
+                setContadorRecuperar(contadorRecuperar + 1)
+                Swal.fire({
+                  icon:'success',
+                  title: 'Codigo confirmado',
+                  showConfirmButton: false,
+                  timer: 1700,
+                  text: ':,(',
+                })
+              }
+              
               console.log('Respuesta codigo de recuperacion',respuesta);
         } catch (error) {
-          console.log(error);
+          Swal.fire({
+            icon:'error',
+            title: 'Codigo Incorrecto',
+            showConfirmButton: false,
+            timer: 1700,
+            text: ':,(',
+            iconColor: '#ff0d4a'
+          })
         }
     }
   }
 
 
+  const handleNextStepRecuperar3 = async() => {
+    if(formRecuperarCode.code){
+      console.log('Esta funcion se ejecuto , Codigo');
+      let objCuenta = {
+          newpassword: formRecuperarCuenta.newpassword,
+          phone: Number(formRecuperarCuenta.phoneRegister),
+          country: Number(formRecuperarCuenta.country),
+          code:Number(formRecuperarCuenta.code)
+      }
+        try {
+              const respuesta  = await apiRecuperar.put(`http://c-registro-authenticacion.restoner-api.fun/v1/recover/password` , objCuenta)
+
+              if(respuesta){
+                Swal.fire({
+                  icon:'success',
+                  title: '',
+                  showConfirmButton: false,
+                  timer: 1700,
+                  text: 'Su contraseña ha sido actualizada ocn exito',
+                })
+              }
+              
+              console.log('Respuesta codigo de recuperacion',respuesta);
+        } catch (error) {
+          Swal.fire({
+            icon:'error',
+            title: 'Ups...',
+            showConfirmButton: false,
+            timer: 1700,
+            text: 'error al cambiar la contraseña',
+            iconColor: '#ff0d4a'
+          })
+        }
+    }
+  }
+
   console.log('Sesion',formInicioSesion);
-  console.log('registro',formInicioRegister);                              
-  console.log('recuperar',formRecuperar);                              
+  console.log('registro',formInicioRegister);                                                           
   console.log('codigo', formCode);
+  console.log('recuperar' , formRecuperarCuenta);
 
   return (
     <div className={styles.container_alert}>
@@ -434,7 +491,8 @@ const handleNextStep3 = async () => {
             name="number"
             value={formInicioSesion.number}
             onChange={(value ,country) => {
-              setFormRecuperar({...formRecuperar, phoneRegister:value.substring(country.dialCode.length) , country:country.dialCode})
+              setFormRecuperar({...formRecuperar, phoneRegister:value.substring(country.dialCode.length) , country:country.dialCode}),
+              setFormRecuperarCuenta({...formRecuperarCuenta, phoneRegister:value.substring(country.dialCode.length) , country:country.dialCode})
             }}
             // onClick={phone => handleNumberNext(phone.target.value)}
             />
@@ -468,7 +526,8 @@ const handleNextStep3 = async () => {
               placeholder='4 9 5 6 7 2' 
               autoComplete="new-password"
               onChange={(e) => {
-                setFormRecuperarCode({ ...formRecuperarCode, [e.target.name]: e.target.value })
+                setFormRecuperarCode({ ...formRecuperarCode, [e.target.name]: e.target.value }),
+                setFormRecuperarCuenta({ ...formRecuperarCuenta, [e.target.name]: e.target.value })
               }}
               />
               <div className={styles.buttons_multi_container}>
@@ -492,43 +551,17 @@ const handleNextStep3 = async () => {
               <button className={styles.button_reenviar_codigo}>Reenviar Codigo</button>
           </Step>
           <Step label="3" className={styles.step_3}>
-            <div>
-            <PersonRoundedIcon/>
-            <input 
-            type="text" 
-            name="nombre" 
-            id="" 
-            placeholder='Nombre' 
-            autoComplete="new-text"
-            onChange={(e) => {
-              setFormInicioRegister({ ...formInicioRegister, [e.target.name]: e.target.value });
-            }}
-            />
-            </div>
-            <div>
-              <PersonRoundedIcon/>
-            <input 
-            type="text" 
-            name="apellido" 
-            id="" 
-            placeholder='Apellido'
-            autoComplete="new-text" 
-            onChange={(e) => {
-              setFormInicioRegister({ ...formInicioRegister, [e.target.name]: e.target.value });
-            }}
-            />
             
-            </div>
             <div>
             <HttpsRoundedIcon/>
             <input 
             type="password" 
-            name="password" 
+            name="newpassword" 
             id="" 
             placeholder='Contraseña' 
             autoComplete="new-password" 
             onChange={(e) => {
-              setFormInicioRegister({ ...formInicioRegister, [e.target.name]: e.target.value });
+              setFormRecuperarCuenta({ ...formRecuperarCuenta, [e.target.name]: e.target.value });
             }}
             />
             
@@ -537,12 +570,12 @@ const handleNextStep3 = async () => {
               <HttpsRoundedIcon/>
             <input 
             type="password" 
-            name="repeatPassword" 
+            name="repeatnewpassword" 
             id="" 
             placeholder='Repita contraseña'  
             autoComplete="new-password"
             onChange={(e) => {
-              setFormInicioRegister({ ...formInicioRegister, [e.target.name]: e.target.value });
+              setFormRecuperarCuenta({ ...formRecuperarCuenta, [e.target.name]: e.target.value });
             }}
             />
             
@@ -559,15 +592,13 @@ const handleNextStep3 = async () => {
               <button 
               type='button'
               className={styles.button_ingresar} 
-              onClick={handleNextStep3}
+              onClick={handleNextStepRecuperar3}
               disabled={
-                formInicioRegister.nombre.length < 2 ||
-                formInicioRegister.apellido.length < 2 ||
-                formInicioRegister.password.length < 6 ||
-                formInicioRegister.password !== formInicioRegister.repeatPassword
+                formRecuperarCuenta.newpassword.length < 6 ||
+                formRecuperarCuenta.newpassword != formRecuperarCuenta.repeatnewpassword
               }
               >
-               Crear Usuario
+                Cambiar contraseña
               </button>
           </section>
           </Step>
