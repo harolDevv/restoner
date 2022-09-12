@@ -89,11 +89,121 @@ $primary_color: #ff0d4a;
         }
     }
     .info_negocio_details_container{
-        padding: 10px 15px;
-        border: 1px solid  #E8E8E8; 
-        border-radius: 10px;
-        background-color: white;
+        .info_negocio_details_child_container{
+            background-color: red;
+            border: 1px solid  #E8E8E8;
+            padding: 10px 15px; 
+            background-color: white;
+            border-radius: 10px;
+        }
+        .posts_container{
+            display: flex;
+            flex-direction: column;
+            .posts_first_child_container{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                h4{
+                    margin: 0;
+                }
+            }
+            button{
+                background-color: transparent;
+                color: $primary_color;
+                border: none;
+                font-size: 16px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                align-self: flex-end;
+                cursor: pointer;
+                justify-content: center;
+            }
+            .posts_child_container{
+                display: flex;
+                .post_container{
+                    margin: 10px;
+                }
+            }
+        }
+        .rangoReparto_container{
+            .estasEnElRango_container{
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                .estasEnElRango_error{
+                    display: flex;
+                    align-items: center;
+                    color: #ed1f34;
+                    border: 1px solid #ed1f34;
+                    border-radius: 10px;
+                    margin-left: 20px;
+                    padding: 10px 20px;
+                    svg{
+                        margin-right: 10px;
+                    }
+                    p{
+                        margin: 0;
+                    }
+                }
+                .estasEnElRango_success{
+                    display: flex;
+                    align-items: center;
+                    color: #02b844;
+                    border: 1px solid #02b844;
+                    border-radius: 10px;
+                    margin-left: 20px;
+                    padding: 10px 20px;
+                    svg{
+                        margin-right: 10px;
+                    }
+                    p{
+                        margin: 0;
+                    }
+                }
+                .estasEnElRango_warning{
+                    display: flex;
+                    max-width: 450px;
+                    align-items: center;
+                    color: #ce9844;
+                    border: 1px solid #ce9844;
+                    border-radius: 10px;
+                    margin-left: 20px;
+                    padding: 10px 20px;
+                    svg{
+                        margin-right: 10px;
+                    }
+                    p{
+                        margin: 0;
+                    }
+                }
+            }
+           iframe{
+            border: none;
+            height: 200px;
+           }
+           .Map_leaflet_container{
+            width: 100%;
+           }
+           button{
+                padding: 10px 15px;
+                color: $primary_color;
+                background-color: transparent;
+                border: 1px solid $primary_color;
+                font-size: 16px;
+                border-radius: 10px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: .2s all;
+                &:hover{
+                    transform: scale(.98);
+                }
+           }
+        }
         .tiposcomida_container{
+            span{
+                text-align: center;
+            }
             margin-top: 10px;
             .tiposcomida_content{
                 display: flex;
@@ -106,6 +216,7 @@ $primary_color: #ff0d4a;
             }
         }
         .servicios_container{
+            margin-top: 10px;
             .servicios_content{
                 display: flex;
                 flex-direction: column;
@@ -125,6 +236,7 @@ $primary_color: #ff0d4a;
             }
         }
         .metodosPago_container{
+            margin-top: 10px;
             .metodosPago_content{
                 @include content_scale;
                 .pagos_icons{
@@ -137,6 +249,7 @@ $primary_color: #ff0d4a;
             }
         }
         .direccion_container{
+            margin-top: 10px;
             .direccion_content{
                 @include content_scale;
                 span{
@@ -145,6 +258,7 @@ $primary_color: #ff0d4a;
             }
         }
         .horario_container{
+            margin-top: 10px;
             .horario_content{
                 display: flex;
                 flex-direction: column;
@@ -155,6 +269,7 @@ $primary_color: #ff0d4a;
             }
         }
         .contacto_container{
+            margin-top: 10px;
             display: flex;
             flex-direction: column;
             .contacto_content{
@@ -176,6 +291,7 @@ $primary_color: #ff0d4a;
                 }
             }
         }
+        margin-top: 10px;
         .button_container{
             button{
                 display: flex;
@@ -201,7 +317,6 @@ $primary_color: #ff0d4a;
         .header_section{
             display: flex;
             padding: 5px;
-            border-bottom: 1px solid rgb(175, 175, 175);
             margin-bottom: 10px;
             span{
                 font-size: 17px;

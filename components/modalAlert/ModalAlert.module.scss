@@ -30,6 +30,7 @@ $primary_color: #ff0d4a;
         padding-top: 20px;
         border-radius:16px;
         position: relative;
+        z-index: 999;
         .close_modal{
             position: absolute;
             right: 10px;
@@ -49,6 +50,17 @@ $primary_color: #ff0d4a;
                 width: 100%;
                 margin-left: 10px;
             }
+        }
+        .button_recuperar{
+            margin: 10px;
+            color: $primary_color;
+            width: 100%;
+            background-color: white;
+            border: none;
+            font-size: 18px;
+            padding: 8px;
+            border-radius: 10px;
+            cursor: pointer;
         }
         .button_registrarme{
             margin: 10px;
@@ -97,6 +109,9 @@ $primary_color: #ff0d4a;
             color: $primary_color;
         }
         .step_2{
+            .button_reenviar_codigo{
+                margin-top: 10px;
+            }
             input{
                 padding: 10px;
                 border-radius: 10px;
@@ -172,6 +187,8 @@ $primary_color: #ff0d4a;
         } 
         .buttons_multi_container{
             display: flex;
+            border: none;
+            outline: none;
         }
     }
 }
@@ -188,5 +205,18 @@ $primary_color: #ff0d4a;
     .flag-dropdown{
         border-right: none;
         border-radius: 10px 0px 0px 10px;
+    }
+}
+
+
+.span_error{
+    display: flex;
+    align-items: center;
+    color: #222121;
+    margin-top: 10px;
+    font-weight: 600;
+    svg{
+        color: #ff0d4a;
+        margin-right: 10px;
     }
 }

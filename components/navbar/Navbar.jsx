@@ -14,12 +14,13 @@ import Swal from 'sweetalert2'
 import Logo from '../../public/images/Restoner.png'
 import Image from 'next/image'
 import ModalAlert from '../modalAlert/ModalAlert';
+import { useSelector } from 'react-redux';
 
 
 const Navbar = () => {
 
   const [ mostrarModalSesion , setMostrarModalSesion ]  = useState(false)
-
+  const {mostrarModal} = useSelector(state => state.mostrarModal)
   return (
     <div className={styles.Navbar_container}>
       <div className={styles.Navbar_firstChild}>
@@ -39,36 +40,52 @@ const Navbar = () => {
         <div className={styles.Navbar_icons_container}>
         <HomeRoundedIcon onClick={ () =>
           Swal.fire({
-            position: 'top-end',
-            icon:'warning',
-            title: 'Oops...',
-            showConfirmButton: false,
-            timer: 1900,
-            text: 'Restoner sigue trabajando en esta funcionalidad :(',
-            iconColor: '#ff0d4a'
+            title: 'Funcionalidad en desarrollo',
+            text: "Restoner continua trabajando constantemente, puede  disfrutar de todas las funcionalidades en nuestra app móvil actualmente disponible para Android",
+            showCancelButton: true,
+            confirmButtonColor: '#ff0d4a',
+            cancelButtonColor: 'gray',
+            confirmButtonText: 'Descargar App',
+            cancelButtonText: 'Regresar',
+            cancelButtonColorText: 'black'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.open('https://bit.ly/3gVZAZw', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes')
+            }
           })
+          
         }/>
         <MenuRoundedIcon onClick={ () =>
-          Swal.fire({
-            position: 'top-end',
-            icon:'warning',
-            title: 'Oops...',
-            showConfirmButton: false,
-            timer: 1900,
-            text: 'Restoner sigue trabajando en esta funcionalidad :(',
-            iconColor: '#ff0d4a'
-          })
+        Swal.fire({
+          title: 'Funcionalidad en desarrollo',
+          text: "Restoner continua trabajando constantemente, puede  disfrutar de todas las funcionalidades en nuestra app móvil actualmente disponible para Android",
+          showCancelButton: true,
+          confirmButtonColor: '#ff0d4a',
+          cancelButtonColor: 'gray',
+          confirmButtonText: 'Descargar App',
+          cancelButtonText: 'Regresar',
+          cancelButtonColorText: 'black'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.open('https://bit.ly/3gVZAZw', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes')
+          }
+        })
         }/>
         <NotificationsRoundedIcon onClick={ () =>
-          Swal.fire({
-            position: 'top-end',
-            icon:'warning',
-            title: 'Oops...',
-            showConfirmButton: false,
-            timer: 1900,
-            text: 'Restoner sigue trabajando en esta funcionalidad :(',
-            iconColor: '#ff0d4a'
-          })
+         Swal.fire({
+          title: 'Funcionalidad en desarrollo',
+          text: "Restoner continua trabajando constantemente, puede  disfrutar de todas las funcionalidades en nuestra app móvil actualmente disponible para Android",
+          showCancelButton: true,
+          confirmButtonColor: '#ff0d4a',
+          cancelButtonColor: 'gray',
+          confirmButtonText: 'Descargar App',
+          cancelButtonText: 'Regresar',
+          cancelButtonColorText: 'black'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.open('https://bit.ly/3gVZAZw', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes')
+          }
+        })
         }/>
         </div>
       </div>
@@ -76,7 +93,7 @@ const Navbar = () => {
           <IconProfile setMostrarModalSesion={setMostrarModalSesion}/>
       </div>
       {
-        mostrarModalSesion  && <ModalAlert setMostrarModalSesion={setMostrarModalSesion}/>
+        mostrarModal  && <ModalAlert setMostrarModalSesion={setMostrarModalSesion}/>
       }
     </div>
   )

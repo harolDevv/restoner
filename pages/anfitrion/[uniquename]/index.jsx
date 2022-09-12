@@ -5,6 +5,16 @@ import { getInfoNegotion } from '../../../redux/actions/infoNegotionAction'
 import styles from './index.module.scss'
 import Link from 'next/link'
 import Image from 'next/image'
+import Script from 'next/script'
+import dynamic from 'next/dynamic'
+
+
+const Map = dynamic(() => import('../../../components/Map/Map'), {
+    ssr: false,
+  })
+
+console.log(Map)
+
 
 
 //iconos
@@ -19,27 +29,67 @@ import WifiProtectedSetupRoundedIcon from '@mui/icons-material/WifiProtectedSetu
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import ShopRoundedIcon from '@mui/icons-material/ShopRounded';
 import QrCodeScannerRoundedIcon from '@mui/icons-material/QrCodeScannerRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
+import DoDisturbOnRoundedIcon from '@mui/icons-material/DoDisturbOnRounded';
+import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
+
+import { changeMostrar } from '../../../redux/reducers/modalAlertReducer'
+import { getInformationPosts } from '../../../redux/actions/PostsActions'
 
 const days = ['Lunes' , 'Martes' , 'Miercoles' , 'Jueves' , 'Viernes' , 'Sabado' , 'Domingo']
 
 const ProductInfo = () => {
     const { query: {uniquename} } = useRouter()
     const dispatch = useDispatch()
-    const [mostrarAlerta, setMostrarAlerta] = useState(true)
+    const [UserUbication , setUserUbication] = useState({
+        latitude:0,
+        longitude:0,
+    })
+    
 
     // useSelectors para los state de redux
     const {data} = useSelector(state => state.infoNegocio.infoNegocio)
-
-
+    const {usuario} = useSelector(state => state.infoUsuario)
+    const {RangoEntrega} = useSelector(state => state.rangoEntrega)
+    const isrestriction = useSelector(state => state.infoNegocio?.infoNegocio?.data?.delivery.isrestriction)
+    const {Posts} = useSelector(state => state.PostsReducer)
     useEffect(() => {
         if(uniquename){
                 dispatch(getInfoNegotion(uniquename))
             }
         }, [uniquename])
+
+    useEffect(() => {
+
+        if(data){
+                dispatch(getInformationPosts(data.idbusiness , 7))
+            }
+        }, [data])
     
     
+    const handleEstoyEnElRango = () => {
+         if(UserUbication.longitude === 0 || UserUbication.latitude === 0){
+             navigator.geolocation.getCurrentPosition(
+                //success
+                (position) => {
+                    setUserUbication({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                    })
+                },
+                //error
+                (error) => {
+                    console.log(error);
+                },
+                {
+                    enableHighAccuracy:true
+                }
+             );
+         }
+    }
         //obetner las categorias
-    
+        console.log(UserUbication);
   return (
     <div className={styles.info_negocio_container}>
         <section  className={styles.info_negocio_header_container}>
@@ -71,13 +121,47 @@ const ProductInfo = () => {
             <div className={styles.info_negocio_header_app}>
                 <h4>!ATENCIÓN COMENSAL! </h4>
                 <p><b>Restoner</b> continua trabajando constantemente, puede disfrutar de todas las funcionalidades en nuestra app movil actualmente disponible para Android</p>
-                <button type='button'>
+                <button type='button' onClick={
+                     () => window.open('https://bit.ly/3gVZAZw', '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes')
+                }>
                     <ShopRoundedIcon/>
                     Descargar app
                 </button>
             </div>
         </section>
         <section  className={styles.info_negocio_details_container}>
+            <div className={styles.posts_container}>
+                <div className={styles.posts_first_child_container}>
+                    <h4>Publicaciones</h4>
+                    <Link  href={`/anfitrion/${uniquename}/posts`}>
+                        <button type='button'>
+                            ver más 
+                            <KeyboardArrowRightRoundedIcon/>
+                        </button>
+                    </Link>
+                </div>
+                <div className={styles.posts_child_container}>
+                    {
+                        Posts?.data?.length > 0 ? 
+                        Posts.data.map(post => {
+                            return(
+                                <div key={post.id} className={styles.post_container}>
+                                    <Image
+                                    src={post.url}
+                                    alt={'post'} 
+                                    width={96}
+                                    height={172}
+                                    />
+
+                                </div>
+                            )
+                        })
+                        : null
+
+                    }
+                </div>
+            </div>
+            <section className={styles.info_negocio_details_child_container} >
             <div className={styles.button_container}>
                 <Link href={`/anfitrion/${uniquename}/carta`}>
                 <button type='button'>
@@ -211,10 +295,58 @@ const ProductInfo = () => {
             </div>
             <div className={styles.rangoReparto_container}>
                 <section className={styles.header_section}>
+                
                     <TrackChangesRoundedIcon/>
                     <span>Rango de reparto</span>
+                    
+                    
                 </section>
-                <section></section>
+                <h4>
+                <b>{data?.delivery.meters} metros a la redonda</b>  - {data?.delivery.details}
+
+                </h4>
+                <section>
+                {/* <iframe
+                    width="100%"
+                    height="100%"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                    src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBML2MbvuMTTCUOyVTEyTugHByWE1D5Nj8
+                    &q=${data?.address.fulladdress}
+                    &zoom=18"
+                    `}></iframe> */}
+                    
+                    {
+                        data &&
+                        <Map latitude={data?.address.latitude} longitude={data?.address.longitude} nameBusiness={data?.name} radius={data?.delivery.meters} UserUbication={UserUbication}/>
+                    }
+                </section>
+                <section className={styles.estasEnElRango_container}>
+                    <button type='button' onClick={handleEstoyEnElRango}>¿Estoy en el rango de reparto?</button>
+                    { 
+                    RangoEntrega === false && isrestriction === false ?
+                    <div className={styles.estasEnElRango_warning}>
+                    <DoDisturbOnRoundedIcon/>
+                        <p>Su ubicacion actual se encuentra fuera del rango de reparto pero el negocio no esta restringiendo los pedidos</p>
+                    </div>
+                        :null
+                    }
+                    {
+                        RangoEntrega === false && isrestriction === true ? 
+                        <div className={styles.estasEnElRango_error}>
+                            <CancelRoundedIcon/>
+                            <p>Su ubicacion actual se encuentra fuera del rango de reparto</p>
+                        </div> : null
+                    }
+                    {
+                        RangoEntrega === true ?
+                        <div className={styles.estasEnElRango_success}>
+                            <CheckCircleRoundedIcon/>
+                            <p>Su ubicacion actual se encuentra dentro del rango de reparto</p>
+                        </div> : null
+                    }
+                </section>
 
             </div>
             <div className={styles.metodosPago_container}>
@@ -313,8 +445,10 @@ const ProductInfo = () => {
                     }
                 </section>
 
-            </div>
+            </div>  
+            </section>
         </section>
+        <Script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBML2MbvuMTTCUOyVTEyTugHByWE1D5Nj8&libraries=places" />
     </div>
   )
 }

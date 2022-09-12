@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getInfoNegotion } from '../../../redux/actions/infoNegotionAction'
 import { getInfoCategoriesAction } from '../../../redux/actions/categoriesAction'
@@ -16,40 +16,186 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 
 //acciones del carrito
 import { addToCart, clearCart, deleteFromCart } from '../../../redux/actions/productosCarritoAction'
+import { getAllRangos } from '../../../redux/actions/rangosHorariosAction'
+import ModalDireccion from '../../../components/modalDireccion/ModalDireccion'
+import Script from 'next/script'
+import ModalAlert from '../../../components/modalAlert/ModalAlert'
+import { changeMostrar } from '../../../redux/reducers/modalAlertReducer'
+import { GetAllDirecciones } from '../../../redux/actions/usuarioAction'
+import axios from 'axios';
+
 
 const Carta = () => {
   let contador = 0;
   let today = new Date()
   let dd = today.getDay() === 0 ? 7 : today.getDay()
+  let formatDate = (new Date()).toDateString()
   const dispatch = useDispatch()
+  console.log(formatDate);
+  let dia = today.getDate()
+  let mes = today.getMonth() + 1
+  let year = today.getFullYear()
+  let fechaCompleta = `${year}-${mes}-${dia}`
+  console.log(fechaCompleta);
+
+  const [modalDireccion, setModalDireccion] = useState(false)
 
   const { query: {uniquename} } = useRouter()
   const {data} = useSelector(state => state.infoNegocio.infoNegocio)
   const categorias = useSelector(state => state.infoCategories.categoriesBussines.data)
   const platos = useSelector(state => state.platosDelDia.platos.data)
   const {carrito} = useSelector(state => state.productosCarrito) 
+  const rangosHorarios = useSelector(state => state.rangosHorarios.rangosHorarios.data)
+  const {usuario} = useSelector(state => state.infoUsuario)
+  const {direccionesUsuario} = useSelector(state => state.infoUsuario)
+  const {RangoEntregaUserAddress} = useSelector(state => state.rangoEntrega)
+  const isrestriction = useSelector(state => state.infoNegocio?.infoNegocio?.data?.delivery.isrestriction)
+  const [pedido, setPedido] = useState({
+    dateregistered: '',
+    idstatus: 1,
+    schedule: '',
+    informationbusiness:{
+      idbusiness: '',
+      name: '',
+      legalidentity: '',
+      typesuscription: ''
+    },
+    addressbusiness:{
+      latitude:'',
+      longitude: '',
+      fulladdress: '',
+      postalcode: '',
+      state: '',
+      city:'',
+      refere:'',
+    },
+    informationcomensal:  {
+      name: '',
+      phonecontact: '',
+      idcomensal: '',
+      legalidentity:''
+    },
+    addresscomensal:'',
+    note:'No se ha agregado ninguna nota',
+    service:'',
+    payment:'',
+    datarejected:{},
+    elements: '',
+  })
+  
+  console.log( pedido);
+  useEffect(() => {
+    dispatch(getInfoNegotion(uniquename))
+  }, [uniquename])
 
   useEffect(() => {
-          dispatch(getInfoNegotion(uniquename))
-    }, [uniquename])
-
+    if(usuario?.data?.jwt){
+      dispatch(GetAllDirecciones(usuario.data.jwt))
+    }
+  }, [usuario])
+  
+  useEffect(() => {
+    console.log('estoy en el useEfect de Rangos');
+    if(data){
+      dispatch(getAllRangos(data.idbusiness, fechaCompleta))
+    }
+  }, [data])
 
   useEffect(() => {
     console.log('estoy en el useEfect');
       if(data) {
-        dispatch(getInfoCategoriesAction(data.idbusiness , '2022-08-26'))
+        dispatch(getInfoCategoriesAction(data.idbusiness , fechaCompleta))
       }
     }, [data])
 
   useEffect(() => {
     console.log('estoy en el useEfect de platos');
       if(data) {
-        dispatch(getPlatosDelDiaAction(data.idbusiness , '2022-08-26', 30))
+        dispatch(getPlatosDelDiaAction(data.idbusiness , fechaCompleta, 30))
       }
     }, [data])
-  
+    
+    useEffect(() => {
+      if(data){
+        setPedido({...pedido , addressbusiness:{
+          latitude: data.address.latitude,
+          longitude: data.address.longitude,
+          fulladdress: data.address.fulladdress,
+          postalcode: data.address.postalcode,
+          state: data.address.state,
+          city: data.address.city,
+          reference: data.address.referenceaddress,
+        }})
+      }
+    }, [data])
+    
+    useEffect(() => {
+      if(data){
+         setPedido({...pedido  , informationbusiness:{
+           idbusiness: data.idbusiness,
+           name: data.name,
+           legalidentity: data.legalidentity,
+           typesuscription: data.typesuscription
+         }})
+      }
+     }, [pedido.addressbusiness])
+    useEffect(() => {
+      if(usuario.data){
+        setPedido({...pedido, informationcomensal:  {
+          ...pedido.informationcomensal ,
+          name: usuario.data.name ,
+          phonecontact: (`${usuario.data.country}${usuario.data.number}`) ,
+          idcomensal:  usuario.data.id ,
+        }})
+      }
+     }, [usuario.data])
+
+    useEffect(() => {
+      if(carrito){
+        setPedido({...pedido, elements: carrito.map(item => {
+          const  {namecategory ,price, urlphotcategory,urlphoto , date, availableorders, stock, ...newFood} = item
+          return{...newFood , iva: data.iva , category: item.namecategory , unitprice: item.price , url: urlphoto, discount:0} 
+        })})
+      }
+
+     }, [carrito])
 
 
+    const handleEnviarPedido = async (token) => { 
+      if(usuario.length < 1){
+        dispatch(changeMostrar(true))
+      }
+      
+      const config = {
+        headers: { 
+            Authorization: `${token}`,
+        }
+      };
+      const now = (new Date()).toLocaleString(); 
+      setPedido({...pedido , dateregistered: now})
+
+    try {
+          const {data} = await axios.post(
+            `http://c-a-pedidos.restoner-api.fun/v3/order/comensales`,
+            pedido,
+            config
+            )
+            console.log(data);
+    } catch (error) {
+      console.log('no llegue');
+      console.log(error);
+    }
+
+    }
+
+    const constAbrirModal = () => {
+      if(usuario.length < 1){
+        return dispatch(changeMostrar(true))
+      }
+      setModalDireccion(state => !state)
+    }
+
+    console.log(isrestriction);
   return (
     <div className={styles.carta_father_container}>
       <section className={styles.header_section}>
@@ -82,7 +228,7 @@ const Carta = () => {
           {
             categorias?.map(categoria => {
               return(
-                <p key={categoria.id}>{categoria.namecategory} ({categoria.elements})</p>
+                <a href={"#" + categoria.idcategory} id={"#" + categoria.idcategory} key={categoria.id}>{categoria.namecategory} ({categoria.elements})</a>
               )
             })
           }
@@ -93,7 +239,7 @@ const Carta = () => {
           platos ?
           platos.map(categoria => {
             return(
-              <div key={categoria.category.idcategory} id={categoria.category.namecategory} className={styles.plato_categories_container}>
+              <div key={categoria.category.idcategory} id={categoria.category.idcategory} className={styles.plato_categories_container}>
                 <h3>{categoria.category.namecategory}</h3>
                 <div className={styles.platos_container}>
                     {
@@ -105,8 +251,8 @@ const Carta = () => {
                               {
                                   `
                                   .plato_image_container{
-                                    height: 130px;
-                                    width: 130px;
+                                    height: 90px;
+                                    width: 90px;
                                     background-image: url('${platos?.urlphoto}');
                                     background-position: center;
                                     background-size: cover;
@@ -126,7 +272,7 @@ const Carta = () => {
                               <div className={styles.plato_product_buttons_container}>
                                 <span>S/.{platos.price}</span>
                                 <div>
-                                  <button type='button' onClick={() => dispatch(deleteFromCart(platos.idelement))}> - </button>
+                                  <button type='button' onClick={() => dispatch(deleteFromCart(platos))}> - </button>
                                   <button type='button' onClick={() => dispatch(addToCart(platos))}> + </button>
                                 </div>
                               </div>
@@ -157,8 +303,8 @@ const Carta = () => {
                                 {
                                     `
                                     .plato_image_container{
-                                      height: 80px;
-                                      width: 80px;
+                                      height: 70px;
+                                      width: 70px;
                                       background-image: url('${producto?.urlphoto}');
                                       background-position: center;
                                       background-size: cover;
@@ -176,7 +322,8 @@ const Carta = () => {
                                 <div className={styles.carrito_producto_buttons_container}>
                                   <span>S/.{producto.price}</span>
                                   <div>
-                                    <button type='button' onClick={() => dispatch(deleteFromCart(producto.idelement))}> - </button>
+                                    <button type='button' onClick={() => dispatch(deleteFromCart(producto))}> - </button>
+                                    <span>{producto.quantity}</span>
                                     <button type='button' onClick={() => dispatch(addToCart(producto))}> + </button>
                                   </div>
                                 </div>
@@ -194,22 +341,50 @@ const Carta = () => {
             <div>
             <h3>Servicio:</h3>
               <select name="" id="">
-                <option value="">Consumir en el lugar</option>
-                <option value="">Recoger en el lugar</option>
-                <option value="">Delivery</option>
+              {
+                  data?.services?.map(item => {
+                    return(
+                      <option 
+                      onClick={() => setPedido({...pedido ,  service: {idservice:2 , typemoney: item.typemoney , price: item.price}})} 
+                      key={item.idschedule} value={item.showtocomensal}>
+                        {item.name} (S/.{item.price})
+                      </option>
+                    )
+                  })
+                }
               </select>
             </div>
-            <div>
+            <div className={styles.buttonDirecciones_container}>
               <h3>Direccion:</h3>
-              <p>blablbka</p>
-              <button>cambiar</button>
+              <span className={styles.your_address}>{
+                pedido.addresscomensal ? pedido.addresscomensal.fulladdress : 'Seleciona una direccion'
+                }</span>
+              <button 
+              className={styles.buttonDirecciones} 
+              type='button' 
+              onClick={constAbrirModal}>
+                {
+                  usuario.data ? 'Cambiar' : 'Accede a tu cuenta para selecccionar una direccion'
+                }
+          
+                </button>
+                {
+                  RangoEntregaUserAddress === false && isrestriction === false ? 
+                  <div className={styles.tuUbicacionRango_container_warn}>
+                    <p>La ubicacion selecionada esta fuera del area de entrega  pero el negocio no esta restringiendo los pedidos</p>
+                  </div> :null
+                }
             </div>
             <div>
               <h3>Rango horario:</h3>
               <select name="" id="">
-                <option value="">Consumir en el lugar</option>
-                <option value="">Recoger en el lugar</option>
-                <option value="">Delivery</option>
+              {
+                  rangosHorarios?.map(item => {
+                    return(
+                      <option onClick={() => setPedido({...pedido ,  schedule: {idschedule: item.idschedule , timezone: item.timezone , endtime: item.endtime , starttime: item.starttime , daterequired: item.date , idcarta: data.idbusiness }})} key={item.idschedule} value={item.showtocomensal}>{item.showtocomensal}</option>
+                    )
+                  })
+                }
               </select>
             </div>
             <div>
@@ -218,15 +393,41 @@ const Carta = () => {
                 {
                   data?.paymentmethods?.map(item => {
                     return(
-                      <option key={item.id} value={item.name}>{item.name}</option>
+                      <option  
+                      onClick={() => setPedido({...pedido ,  payment: {
+                              idpayment: item.id,
+                              name: item.name,
+                              phonenumber: item.phonenumber,
+                              url: item.url,
+                              hasnumber: item.hasnumber
+                          }
+                        }
+                      )
+                    } 
+                      key={item.id} value={item.name}>
+                        {item.name}
+                        </option>
                     )
                   })
                 }
               </select>
             </div>
         </div>
-        <h3>Nota:</h3>
-        <input type="text" name="" id="" placeholder='Ejm: Monto con el cancelara'/>
+        <h3>Nota (opcional):</h3>
+        <input 
+        type="text" 
+        name="note" 
+        id="" 
+        placeholder='Ejm: Monto con el cancelara'
+        onChange={e => setPedido({...pedido , [e.target.name] : e.target.value != '' ? e.target.value : 'No se ha agregado ninguna nota'})}
+        />
+        <h3>DNI o RUC (opcional):</h3>
+        <input 
+        type="text" 
+        name="legalidentity" 
+        id="" 
+        onChange={e => setPedido({...pedido , informationcomensal: { ...pedido.informationcomensal ,   legalidentity:  e.target.value}})}
+        />
         <div className={styles.carrito_warning}>
           <div>
                 <InfoRoundedIcon/>
@@ -237,16 +438,39 @@ const Carta = () => {
             </p>
           </div>
         </div>
-          <button className={styles.button_enviar_pedido}>
+          <button 
+          className={styles.button_enviar_pedido}
+          onClick={() => handleEnviarPedido(usuario?.data?.jwt)}
+          disabled={
+          pedido.elements.length < 1 ||
+          pedido.payment == '' ||
+          pedido.service == '' ||
+          pedido.addresscomensal == '' ||
+          pedido.schedule == ''
+        }
+          >
               <SendRoundedIcon/>
               <span>Enviar pedido</span>
               S/.
               {
-               carrito.reduce((sum, value) => ( sum + value.costo ),0)
+                carrito.forEach(item => {
+                  
+                    contador += item.price * item.quantity
+                  })
+                  
+                }
+              {
+                contador 
               }
+              + Servicio
           </button>
           
       </section>
+      {
+        modalDireccion && <ModalDireccion  setModalDireccion={setModalDireccion} setPedido={setPedido} pedido={pedido}/>
+      }
+      <Script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBML2MbvuMTTCUOyVTEyTugHByWE1D5Nj8&libraries=places" />
+
     </div>
   )
 }

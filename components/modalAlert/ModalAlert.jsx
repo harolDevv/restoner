@@ -7,55 +7,230 @@ import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 import { MultiStepForm, Step } from 'react-multi-form';
 
+
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+
+//axios
+import { apiRecuperar, apiRegistro } from '../../axios';
+
+//action
+import { getAllInfoUser } from '../../redux/actions/usuarioAction';
+import { useDispatch } from 'react-redux';
+import { changeMostrar } from '../../redux/reducers/modalAlertReducer';
+
+
+
 const ModalAlert = ({setMostrarModalSesion}) => {
+  const dispatch = useDispatch()
   const [modal , setModal] = useState('sesion')
   const [contador , setContador] = useState(1)
+  const [contadorRecuperar , setContadorRecuperar] = useState(1)
 
   useEffect(() => {
     setContador(1)
+    setContadorRecuperar(1)
   }, [modal])
+
+  //estods de recuperar contraseña
+  const [formRecuperar, setFormRecuperar] = useState({
+    phoneRegister: '',
+    country: '',
+  })
+  const [formRecuperarCode, setFormRecuperarCode] = useState({
+    code: '',
+  })
+  
+  const [Error , setError] = useState('')
+  
   const [formInicioSesion, setFormInicioSesion] = useState({
-    number: '',
+    phone: '',
+    country:'',
     password:''
+  })
+
+  useEffect(() => {
+    setError('')
+  }, [formInicioSesion.phone , formInicioSesion.password])
+
+  const [formNumber, setFormNumber] = useState({
+    phoneRegister: '',
+    country: '',
+  })
+  const [formCode, setFormCode] = useState({
+    codigo: '',
   })
   const [formInicioRegister, setFormInicioRegister] = useState({
     nombre: '',
     apellido: '',
-    number: '',
+    phone:'',
+    country: '',
     password:'',
+    code: '',
+    repeatPassword: '',
   })
 
-  const handleNext = () => {
+  //Obtencion de obj para creacon de cuenta == Numero telefonico STEP1
+  const handleNextStep1 = async () => {
     if(contador < 3){
       setContador(contador + 1)
     } else {
       alert('Cree la cuenta')
       setMostrarModalSesion(false)
     }
+    if(formNumber.country && formNumber.phoneRegister){
+      console.log('Esta funcion se ejecuto');
+      let objNumber = {
+        phoneRegister: Number(formNumber.phoneRegister),
+        country: Number(formNumber.country),
+      }
+        try {
+              const respuesta  = await apiRegistro.post('http://c-registro-authenticacion.restoner-api.fun/v1/codes' , objNumber)
+              console.log(respuesta);
+        } catch (error) {
+          console.log(error);
+        }
+    }
+}
+
+
+  //Obtencion de obj para envio de codigo == CODIGO telefonico STEP2
+  const handleNextStep2 = async () => {
+    if(contador < 3){
+      setContador(contador + 1)
+    } else {
+      alert('Cree la cuenta')
+      setMostrarModalSesion(false)
+    }
+    //Obtencion de obj para creacon de cuenta == Numero telefonico
+    if(formCode.codigo){
+      console.log('Esta funcion se ejecuto , Codigo');
+      let objCode = {
+          code: Number(formCode.codigo),
+      }
+        try {
+              const respuesta  = await apiRegistro.put(`http://c-registro-authenticacion.restoner-api.fun/v1/codes/${formNumber.phoneRegister}/${formNumber.country}` , objCode)
+              console.log(respuesta);
+        } catch (error) {
+          console.log(error);
+        }
+    }
+}
+
+
+//Obtencion de obj para envio del usuario == USUARIO  STEP3
+const handleNextStep3 = async () => {
+  if(contador < 3){
+    setContador(contador + 1)
+  } 
+  //Obtencion de obj para creacon de cuenta == Numero telefonico
+  if(
+    formInicioRegister.nombre 
+    &&formInicioRegister.apellido 
+    &&formInicioRegister.password 
+    &&formInicioRegister.code 
+    && formInicioRegister.country
+    && formInicioRegister.phone){
+    console.log('Esta funcion se ejecuto , Usuario');
+    let objUser = {
+      name:formInicioRegister.nombre  ,
+      lastname: formInicioRegister.apellido,
+      phone:Number(formInicioRegister.phone),
+      country: Number(formInicioRegister.country),
+      password:formInicioRegister.password ,
+      code: Number(formInicioRegister.code) ,
+    }
+      try {
+            console.log(objUser)
+            const respuesta  = await apiRegistro.post(`http://c-registro-authenticacion.restoner-api.fun/v1/comensal` , objUser)
+            console.log(respuesta);
+      } catch (error) {
+        console.log(error);
+      }
+  }
+}
+
+  const handleIngresar = async () => {
+    if(formInicioSesion.phone && formInicioSesion.password && formInicioSesion.country){
+      console.log('Esta funcion se ejecuto , Ingresar');
+      let objIngresar = {
+        phone: Number(formInicioSesion.phone),
+        country: Number(formInicioSesion.country),
+        password: formInicioSesion.password
+      }
+        try {
+              await dispatch(getAllInfoUser(objIngresar))
+        } catch (error) {
+              setError('Numero y/o Contraseña incorrectos');
+        }
+    }
   }
 
-  const handleIngresar = () => {
-    alert('Ingrese')
-    setMostrarModalSesion(false)
+  //funciones para recuperar
+  const handleNextStepRecuperar1 =  async() => {
+    if(contadorRecuperar < 3){
+      setContadorRecuperar(contadorRecuperar + 1)
+    } else {
+      alert('Se cambio la password')
+      setMostrarModalSesion(false)
+    }
+    if(formRecuperar.country && formRecuperar.phoneRegister){
+      console.log('Esta funcion se ejecuto');
+      let objRecuperar = {
+        phoneRegister: Number(formRecuperar.phoneRegister),
+        country: Number(formRecuperar.country),
+      }
+        try {
+              const respuesta  = await apiRecuperar.post('http://c-registro-authenticacion.restoner-api.fun/v1/recover' , objRecuperar)
+              console.log(respuesta);
+        } catch (error) {
+          console.log(error);
+        }
+    }
   }
+  const handleNextStepRecuperar2 =  async() => {
+    if(contadorRecuperar < 3){
+      setContadorRecuperar(contadorRecuperar + 1)
+    } else {
+      alert('Cambie la password')
+      setMostrarModalSesion(false)
+    }
+    //Obtencion de obj para creacon de cuenta == Numero telefonico
+    if(formRecuperarCode.code){
+      console.log('Esta funcion se ejecuto , Codigo');
+      let objCode = {
+          code: Number(formRecuperarCode.code),
+      }
+        try {
+              const respuesta  = await apiRecuperar.put(`http://c-registro-authenticacion.restoner-api.fun/v1/recover/${formRecuperar.phoneRegister}/${formRecuperar.country}` , objCode)
+              console.log('Respuesta codigo de recuperacion',respuesta);
+        } catch (error) {
+          console.log(error);
+        }
+    }
+  }
+
 
   console.log('Sesion',formInicioSesion);
-  console.log('registro',formInicioRegister);
+  console.log('registro',formInicioRegister);                              
+  console.log('recuperar',formRecuperar);                              
+  console.log('codigo', formCode);
 
   return (
     <div className={styles.container_alert}>
       {
         modal === 'sesion'? 
         <div className={styles.modal_sesion}>
-              <CloseRoundedIcon className={styles.close_modal} onClick={() => setMostrarModalSesion(false)} />
+              <CloseRoundedIcon className={styles.close_modal} onClick={() => dispatch(changeMostrar(false)) } />
             <h3>Inicie sesión</h3>
             <PhoneInput
             className={styles.inputNumber}
             country={'pe'}
             placeholder='Tu numero de telefono'
-            name="number"
+            name="phone"
             value={formInicioSesion.number}
-            onChange={phone => setFormInicioSesion({...formInicioSesion, number:phone})}
+            onChange={(value ,country) => {
+              setFormInicioSesion({...formInicioSesion , phone: value.substring(country.dialCode.length) , country:country.dialCode })
+            }}
             />
             <div className={styles.password_container}>
               <HttpsRoundedIcon/>
@@ -70,19 +245,26 @@ const ModalAlert = ({setMostrarModalSesion}) => {
               }}
               />
             </div>
+            {
+              Error ? <span className={styles.span_error}><ErrorOutlineRoundedIcon/> {Error}</span> : null
+            }
+            <button type='button' className={styles.button_recuperar} onClick={() => setModal('Recuperar')}>¿Olvidaste tu contraseña?</button>
             <button type='button' className={styles.button_registrarme}  onClick={() => setModal('register')} >Registrarme</button>
             <button 
             type='button' 
             onClick={handleIngresar}
             className={styles.button_ingresar}
-            disabled={formInicioSesion.number.length < 12 || formInicioSesion.password.length < 3}
+            disabled={formInicioSesion.phone.length < 9 || formInicioSesion.password.length < 3}
             >
-              Ingresar
+              Iniciar sesión
             </button>
-        </div>
-        :
-        <div className={styles.modal_register}>
-          <CloseRoundedIcon className={styles.close_modal} onClick={() => setMostrarModalSesion(false)}/>
+        </div> : null
+        }
+
+        {
+            modal === 'register'? 
+            <div className={styles.modal_register}>
+          <CloseRoundedIcon className={styles.close_modal}  onClick={() => dispatch(changeMostrar(false)) }/>
           <h3>Registrese en 3 simples pasos</h3>
           <MultiStepForm activeStep={contador} accentColor='#ff0d4a'>
             <Step label="1">
@@ -92,18 +274,65 @@ const ModalAlert = ({setMostrarModalSesion}) => {
               placeholder='Tu numero de telefono'
               name="number"
               value={formInicioSesion.number}
-              onChange={phone => setFormInicioRegister({...formInicioRegister, number:phone})}
+              onChange={(value ,country) => {
+                setFormNumber({...formNumber, phoneRegister:value.substring(country.dialCode.length) , country:country.dialCode}),
+                setFormInicioRegister({...formInicioRegister , phone: value.substring(country.dialCode.length) , country:country.dialCode })
+              }}
+              // onClick={phone => handleNumberNext(phone.target.value)}
               />
+              <div className={styles.buttons_multi_container}>
+                  <button 
+                type='button'
+                className={styles.button_ingresar} 
+                onClick={() => setContador(contador - 1)}
+                disabled={contador === 1 }
+                >
+                  Atras 
+                  </button>
+                <button 
+                type='button'
+                className={styles.button_ingresar} 
+                onClick={handleNextStep1 }
+                disabled={formNumber.phoneRegister.length < 9}
+                >
+                  {
+                    contador < 3 ?
+                    'Continuar' : 'Crear cuenta'
+                  }
+                </button>
+            </div>
             </Step>
             <Step className={styles.step_2} label="2">
               <input 
                 type="tel" 
-                name="tel" 
+                name="codigo" 
                 id="" 
                 placeholder='4 9 5 6 7 2' 
                 autoComplete="new-password"
+                onChange={(e) => {
+                  setFormCode({ ...formCode, [e.target.name]: e.target.value }) , 
+                  setFormInicioRegister({ ...formInicioRegister, code: e.target.value });
+                }}
                 />
-                <button>Reenviar Codigo</button>
+                <div className={styles.buttons_multi_container}>
+                  <button 
+                type='button'
+                className={styles.button_ingresar} 
+                onClick={() => setContador(contador - 1)}
+                disabled={contador === 1 }
+                >
+                  Atras 
+                  </button>
+                <button 
+                type='button'
+                className={styles.button_ingresar} 
+                onClick={handleNextStep2}
+                disabled={formCode.codigo.length < 6}
+                >
+                 Continuar
+                </button>
+            </div>
+                <button className={styles.button_reenviar_codigo}>Reenviar Codigo</button>
             </Step>
             <Step label="3" className={styles.step_3}>
               <div>
@@ -151,39 +380,200 @@ const ModalAlert = ({setMostrarModalSesion}) => {
                 <HttpsRoundedIcon/>
               <input 
               type="password" 
-              name="" 
+              name="repeatPassword" 
               id="" 
               placeholder='Repita contraseña'  
               autoComplete="new-password"
+              onChange={(e) => {
+                setFormInicioRegister({ ...formInicioRegister, [e.target.name]: e.target.value });
+              }}
               />
               
               </div>
-             
+              <section className={styles.buttons_multi_container}>
+                  <button 
+                type='button'
+                className={styles.button_ingresar} 
+                onClick={() => setContador(contador - 1)}
+                disabled={contador === 1 }
+                >
+                  Atras 
+                  </button>
+                <button 
+                type='button'
+                className={styles.button_ingresar} 
+                onClick={handleNextStep3}
+                disabled={
+                  formInicioRegister.nombre.length < 2 ||
+                  formInicioRegister.apellido.length < 2 ||
+                  formInicioRegister.password.length < 6 ||
+                  formInicioRegister.password !== formInicioRegister.repeatPassword
+                }
+                >
+                 Crear Usuario
+                </button>
+            </section>
             </Step>
           </ MultiStepForm>
             <button type='button' className={styles.button_registrarme} onClick={() => setModal('sesion')}>Ya tengo una cuenta</button>
+        </div> : null
+        }
+        
+        
+      {
+        modal === 'Recuperar'? 
+        <div className={styles.modal_register}>
+        <CloseRoundedIcon className={styles.close_modal}  onClick={() => dispatch(changeMostrar(false)) }/>
+        <h3>Recupere su cuenta</h3>
+        <MultiStepForm activeStep={contadorRecuperar} accentColor='#ff0d4a'>
+          <Step label="1">
+            <PhoneInput
+            className={styles.inputNumber}
+            country={'pe'}
+            placeholder='Tu numero de telefono'
+            name="number"
+            value={formInicioSesion.number}
+            onChange={(value ,country) => {
+              setFormRecuperar({...formRecuperar, phoneRegister:value.substring(country.dialCode.length) , country:country.dialCode})
+            }}
+            // onClick={phone => handleNumberNext(phone.target.value)}
+            />
             <div className={styles.buttons_multi_container}>
-            <button 
-            type='button'
-            className={styles.button_ingresar} 
-            onClick={() => setContador(contador - 1)}
-            disabled={contador === 1 }
-            >
-              Atras 
+                <button 
+              type='button'
+              className={styles.button_ingresar} 
+              onClick={() => setContadorRecuperar(contador - 1)}
+              disabled={contadorRecuperar === 1 }
+              >
+                Atras 
+                </button>
+              <button 
+              type='button'
+              className={styles.button_ingresar} 
+              onClick={handleNextStepRecuperar1 }
+              disabled={formRecuperar.phoneRegister.length < 9}
+              >
+                {
+                  contador < 3 ?
+                  'Continuar' : 'Crear cuenta'
+                }
               </button>
-            <button 
-            type='button'
-            className={styles.button_ingresar} 
-            onClick={handleNext}
-            disabled={formInicioRegister.number.length < 12}
-            >
-              {
-                contador < 3 ?
-                'Continuar' : 'Crear cuenta'
-              }
-            </button>
+          </div>
+          </Step>
+          <Step className={styles.step_2} label="2">
+            <input 
+              type="tel" 
+              name="code" 
+              id="" 
+              placeholder='4 9 5 6 7 2' 
+              autoComplete="new-password"
+              onChange={(e) => {
+                setFormRecuperarCode({ ...formRecuperarCode, [e.target.name]: e.target.value })
+              }}
+              />
+              <div className={styles.buttons_multi_container}>
+                <button 
+              type='button'
+              className={styles.button_ingresar} 
+              onClick={() => setContadorRecuperar(contadorRecuperar - 1)}
+              disabled={contadorRecuperar === 1 }
+              >
+                Atras 
+                </button>
+              <button 
+              type='button'
+              className={styles.button_ingresar} 
+              onClick={handleNextStepRecuperar2}
+              disabled={formRecuperarCode.code.length < 6}
+              >
+               Continuar
+              </button>
+          </div>
+              <button className={styles.button_reenviar_codigo}>Reenviar Codigo</button>
+          </Step>
+          <Step label="3" className={styles.step_3}>
+            <div>
+            <PersonRoundedIcon/>
+            <input 
+            type="text" 
+            name="nombre" 
+            id="" 
+            placeholder='Nombre' 
+            autoComplete="new-text"
+            onChange={(e) => {
+              setFormInicioRegister({ ...formInicioRegister, [e.target.name]: e.target.value });
+            }}
+            />
             </div>
-        </div>
+            <div>
+              <PersonRoundedIcon/>
+            <input 
+            type="text" 
+            name="apellido" 
+            id="" 
+            placeholder='Apellido'
+            autoComplete="new-text" 
+            onChange={(e) => {
+              setFormInicioRegister({ ...formInicioRegister, [e.target.name]: e.target.value });
+            }}
+            />
+            
+            </div>
+            <div>
+            <HttpsRoundedIcon/>
+            <input 
+            type="password" 
+            name="password" 
+            id="" 
+            placeholder='Contraseña' 
+            autoComplete="new-password" 
+            onChange={(e) => {
+              setFormInicioRegister({ ...formInicioRegister, [e.target.name]: e.target.value });
+            }}
+            />
+            
+            </div>
+            <div>
+              <HttpsRoundedIcon/>
+            <input 
+            type="password" 
+            name="repeatPassword" 
+            id="" 
+            placeholder='Repita contraseña'  
+            autoComplete="new-password"
+            onChange={(e) => {
+              setFormInicioRegister({ ...formInicioRegister, [e.target.name]: e.target.value });
+            }}
+            />
+            
+            </div>
+            <section className={styles.buttons_multi_container}>
+                <button 
+              type='button'
+              className={styles.button_ingresar} 
+              onClick={() => setContador(contador - 1)}
+              disabled={contador === 1 }
+              >
+                Atras 
+                </button>
+              <button 
+              type='button'
+              className={styles.button_ingresar} 
+              onClick={handleNextStep3}
+              disabled={
+                formInicioRegister.nombre.length < 2 ||
+                formInicioRegister.apellido.length < 2 ||
+                formInicioRegister.password.length < 6 ||
+                formInicioRegister.password !== formInicioRegister.repeatPassword
+              }
+              >
+               Crear Usuario
+              </button>
+          </section>
+          </Step>
+        </ MultiStepForm>
+          <button type='button' className={styles.button_registrarme} onClick={() => setModal('sesion')}>Ya tengo una cuenta</button>
+      </div> : null
       }
     </div>
   )

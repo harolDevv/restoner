@@ -12,10 +12,24 @@ const productosCarrito = createSlice({
             state.carrito = action.payload
         },
         addProducto: (state,action) => {
-            state.carrito = [...state.carrito , action.payload]
+            console.log(action.payload);
+            let itemInCart = state.carrito.find(item => item.idelement === action.payload.idelement)
+            console.log(itemInCart);
+            itemInCart ?  
+            state.carrito = state.carrito.map(item => item.idelement === action.payload.idelement ? {
+                ...item, quantity: item.quantity + 1
+            }: item)
+            : 
+            state.carrito = [...state.carrito ,{...action.payload , quantity:1}]
+            
         },
         deleteOneProducto : (state, action) => {
-            state.carrito = state.carrito.find(item => item.id === action.payload)
+            let itemInCartDelete = state.carrito.find(item => item.idelement === action.payload.idelement)
+            itemInCartDelete.quantity > 1 ?
+            state.carrito = state.carrito.map(item => item.idelement === action.payload.idelement ?{... item ,
+            quantity: item.quantity - 1} : item)
+            :
+            state.carrito = state.carrito.filter(item => item.idelement != action.payload.idelement)
         },
         deleteProducto : (state, action) => {
             state.carrito = state.carrito.filter(item => item.id != action.payload)
