@@ -74,6 +74,12 @@ $primary_color: #ff0d4a;
                         p , h4{
                             margin: 0;
                         }
+                        h4{
+                            cursor: pointer;
+                            &:hover{
+                              text-decoration: underline;  
+                            }
+                        }
                         p{
                             color: rgb(85, 85, 85);
                         }

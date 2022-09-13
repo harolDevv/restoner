@@ -23,6 +23,7 @@ import ModalAlert from '../../../components/modalAlert/ModalAlert'
 import { changeMostrar } from '../../../redux/reducers/modalAlertReducer'
 import { GetAllDirecciones } from '../../../redux/actions/usuarioAction'
 import axios from 'axios';
+import ZoomPlato from '../../../components/zoomPlato/zoomPlato'
 
 
 const Carta = () => {
@@ -81,7 +82,10 @@ const Carta = () => {
     payment:'',
     datarejected:{},
     elements: '',
+    ismadebyweb: true,
   })
+
+  const [zoomPlato , setZoomPlato] = useState("")
   
   console.log( pedido);
   useEffect(() => {
@@ -196,6 +200,7 @@ const Carta = () => {
     }
 
     console.log(isrestriction);
+    console.log(zoomPlato);
   return (
     <div className={styles.carta_father_container}>
       <section className={styles.header_section}>
@@ -265,7 +270,7 @@ const Carta = () => {
                           </div>
                           <div className={styles.plato_product_details_container}>
                               <div className={styles.plato_product_info_container}>
-                                <h4>{platos.name}</h4>
+                                <h4 onClick={() => setZoomPlato(platos)}>{platos.name}</h4>
                                 <p>{platos.description}</p>
                               </div>
 
@@ -343,13 +348,15 @@ const Carta = () => {
               <select name="" id="">
               {
                   data?.services?.map(item => {
-                    return(
-                      <option 
-                      onClick={() => setPedido({...pedido ,  service: {idservice:2 , typemoney: item.typemoney , price: item.price}})} 
-                      key={item.idschedule} value={item.showtocomensal}>
-                        {item.name} (S/.{item.price})
-                      </option>
-                    )
+                    if(item.id !== 1){
+                      return(
+                        <option 
+                        onClick={() => setPedido({...pedido ,  service: {idservice:2 , typemoney: item.typemoney , price: item.price}})} 
+                        key={item.idschedule} value={item.showtocomensal}>
+                          {item.name} (S/.{item.price})
+                        </option>
+                      )
+                    }
                   })
                 }
               </select>
@@ -470,7 +477,10 @@ const Carta = () => {
         modalDireccion && <ModalDireccion  setModalDireccion={setModalDireccion} setPedido={setPedido} pedido={pedido}/>
       }
       <Script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBML2MbvuMTTCUOyVTEyTugHByWE1D5Nj8&libraries=places" />
-
+      {
+        zoomPlato !== "" ? 
+        <ZoomPlato  zoomPlato={zoomPlato} setZoomPlato={setZoomPlato}/> : null
+      }
     </div>
   )
 }
