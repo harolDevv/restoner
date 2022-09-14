@@ -12,6 +12,15 @@ $primary_color: #ff0d4a;
     .header_section{
         grid-template-rows: 1fr 1fr;
         background-color: #F7F7F7;
+        .fecha_completa_container{
+                display: flex;
+                align-items: center;
+            button{
+                background-color: transparent;
+                color: black; 
+                
+            }
+        }
         a{
             display: block;
             text-decoration: none;

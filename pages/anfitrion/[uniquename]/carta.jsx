@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getInfoNegotion } from '../../../redux/actions/infoNegotionAction'
 import { getInfoCategoriesAction } from '../../../redux/actions/categoriesAction'
@@ -13,7 +13,7 @@ import { getPlatosDelDiaAction } from '../../../redux/actions/platosAction'
 import { style } from '@mui/system'
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
-
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 //acciones del carrito
 import { addToCart, clearCart, deleteFromCart } from '../../../redux/actions/productosCarritoAction'
 import { getAllRangos } from '../../../redux/actions/rangosHorariosAction'
@@ -24,6 +24,12 @@ import { changeMostrar } from '../../../redux/reducers/modalAlertReducer'
 import { GetAllDirecciones } from '../../../redux/actions/usuarioAction'
 import axios from 'axios';
 import ZoomPlato from '../../../components/zoomPlato/zoomPlato'
+import dynamic from 'next/dynamic'
+import Swal from 'sweetalert2'
+
+const Map = dynamic(() => import('../../../components/Map/Map'), {
+  ssr: false,
+})
 
 
 const Carta = () => {
@@ -37,7 +43,9 @@ const Carta = () => {
   let mes = today.getMonth() + 1
   let year = today.getFullYear()
   let fechaCompleta = `${year}-${mes}-${dia}`
+  let fechaCompleta2 = `${year}/${mes}/${dia}`
   console.log(fechaCompleta);
+  const circleRef = useRef('')
 
   const [modalDireccion, setModalDireccion] = useState(false)
 
@@ -176,18 +184,64 @@ const Carta = () => {
         }
       };
       const now = (new Date()).toLocaleString(); 
-      setPedido({...pedido , dateregistered: now})
+      const hour = (new Date()).getHours()
+      const minute = (new Date()).getMinutes()
+      const second = (new Date()).getSeconds()
+      setPedido({...pedido , dateregistered: `${fechaCompleta} ${hour}:${minute}:${second}`})
 
     try {
-          const {data} = await axios.post(
-            `http://c-a-pedidos.restoner-api.fun/v3/order/comensales`,
-            pedido,
-            config
-            )
-            console.log(data);
+      Swal.fire({
+        title: '¿Estas seguro que deseas Enviar el pedido?',
+        text: "La dirección sera eliminada de forma permanente",
+        icon: 'warning',
+        iconColor: '#ff0d4a',
+        showCancelButton: true,
+        confirmButtonColor: '#ff0d4a',
+        cancelButtonColor: '#88888a;',
+        confirmButtonText: 'Si, Enviar!',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+            axios.post(
+              `http://c-a-pedidos.restoner-api.fun/v3/order/comensales`,
+              pedido,
+              config).then(
+            Swal.fire({
+              icon:'success',
+              title: 'Felicidades!',
+              showConfirmButton: false,
+              timer: 1000,
+              text: 'El envio se envio con exito',
+              iconColor: '#ff0d4a'
+            })
+          )
+        }
+      })
+          // const {data} = await axios.post(
+          //   `http://c-a-pedidos.restoner-api.fun/v3/order/comensales`,
+          //   pedido,
+          //   config
+          //   )
+           
+          //   if(data){
+          //     Swal.fire({
+          //       icon:'success',
+          //       title: 'Felicidades',
+          //       showConfirmButton: false,
+          //       timer: 1700,
+          //       text: 'Su pedido se envio con exito',
+          //     })
+              
+          //   }
     } catch (error) {
-      console.log('no llegue');
-      console.log(error);
+      
+      Swal.fire({
+        icon:'error',
+        title: 'Ups...',
+        showConfirmButton: false,
+        timer: 1700,
+        text: 'Hubo un error con su pedido',
+      })
     }
 
     }
@@ -202,6 +256,7 @@ const Carta = () => {
     console.log(isrestriction);
     console.log(zoomPlato);
   return (
+  
     <div className={styles.carta_father_container}>
       <section className={styles.header_section}>
         <div>
@@ -227,7 +282,17 @@ const Carta = () => {
           }
           PM
           </span>
+          <section className={styles.fecha_completa_container}>
+            <button>
+              <ArrowBackIosNewRoundedIcon/>
+            </button>
+            {fechaCompleta2}
+            <button>
+              <ArrowForwardIosRoundedIcon/>
+            </button>
+          </section>
         </div>
+       
         <div>
           <h4>Categorias</h4>
           {
@@ -480,7 +545,8 @@ const Carta = () => {
       {
         zoomPlato !== "" ? 
         <ZoomPlato  zoomPlato={zoomPlato} setZoomPlato={setZoomPlato}/> : null
-      }
+      } 
+       
     </div>
   )
 }

@@ -1,3 +1,5 @@
+$primary_color: #ff0d4a;
+
 .zoom_plato_container{
     position: fixed;
     background-color: #0000009e;
@@ -9,4 +11,59 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    .zoom_plato{
+        background-color: white;
+        border-radius: 16px;
+        padding: 25px 10px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 429px;
+        align-items: center;
+        img{
+            border-radius: 10px;
+            justify-self: center;
+            align-self: center;
+        }
+        .zoom_plato_info_container{
+            margin-top: 30px;
+            align-self: flex-start;
+            margin-left: 20px;
+            h3,p{
+                margin: 10px 0px;
+                align-self: flex-start;
+            }
+        }
+        .zoom_plato_buttons_container{
+            margin-top: 20px;
+            background-color: rgb(243, 243, 243);
+            padding: 5px 10px;
+            border-radius: 10px;
+            button{
+                background-color: transparent;
+                                border: 2.5px solid $primary_color;
+                                border-radius: 5px;
+                                color: $primary_color;
+                                height: 25px;
+                                width: 25px;
+                                text-align: center;
+                                font-size: 19px;
+                                line-height: 19px;
+                                cursor: pointer;
+                                transition: .3s all;
+                                margin: 0px 8px;
+                                &:hover{
+                                    background-color: $primary_color;
+                                    color: white;
+                                }
+            }
+        }
+        
+    }
+    svg{
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
 }

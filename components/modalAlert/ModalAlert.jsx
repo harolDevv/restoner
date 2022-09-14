@@ -103,12 +103,6 @@ const ModalAlert = ({setMostrarModalSesion}) => {
 
   //Obtencion de obj para envio de codigo == CODIGO telefonico STEP2
   const handleNextStep2 = async () => {
-    if(contador < 3){
-      setContador(contador + 1)
-    } else {
-      alert('Cree la cuenta')
-      setMostrarModalSesion(false)
-    }
     //Obtencion de obj para creacon de cuenta == Numero telefonico
     if(formCode.codigo){
       console.log('Esta funcion se ejecuto , Codigo');
@@ -117,9 +111,26 @@ const ModalAlert = ({setMostrarModalSesion}) => {
       }
         try {
               const respuesta  = await apiRegistro.put(`http://c-registro-authenticacion.restoner-api.fun/v1/codes/${formNumber.phoneRegister}/${formNumber.country}` , objCode)
-              console.log(respuesta);
+              
+              if(respuesta){
+                setContador(contador + 1)
+                Swal.fire({
+                  icon:'success',
+                  title: 'Codigo confirmado',
+                  showConfirmButton: false,
+                  timer: 1700,
+                  text: ':,(',
+                })
+              }
         } catch (error) {
-          console.log(error);
+            Swal.fire({
+              icon:'error',
+              title: 'Codigo Incorrecto',
+              showConfirmButton: false,
+              timer: 1700,
+              text: ':,(',
+              iconColor: '#ff0d4a'
+            })
         }
     }
 }
@@ -127,9 +138,6 @@ const ModalAlert = ({setMostrarModalSesion}) => {
 
 //Obtencion de obj para envio del usuario == USUARIO  STEP3
 const handleNextStep3 = async () => {
-  if(contador < 3){
-    setContador(contador + 1)
-  } 
   //Obtencion de obj para creacon de cuenta == Numero telefonico
   if(
     formInicioRegister.nombre 
@@ -150,9 +158,26 @@ const handleNextStep3 = async () => {
       try {
             console.log(objUser)
             const respuesta  = await apiRegistro.post(`http://c-registro-authenticacion.restoner-api.fun/v1/comensal` , objUser)
-            console.log(respuesta);
+            
+            if(respuesta){
+              Swal.fire({
+                icon:'success',
+                title: '',
+                showConfirmButton: false,
+                timer: 1700,
+                text: 'Su cuenta ha sido creada con exito',
+              })
+              dispatch(changeMostrar(false))
+            }
       } catch (error) {
-        console.log(error);
+        Swal.fire({
+          icon:'error',
+          title: 'Ups...',
+          showConfirmButton: false,
+          timer: 1700,
+          text: 'error al cambiar la crear la cuenta',
+          iconColor: '#ff0d4a'
+        })
       }
   }
 }
@@ -249,8 +274,9 @@ const handleNextStep3 = async () => {
                   title: '',
                   showConfirmButton: false,
                   timer: 1700,
-                  text: 'Su contraseña ha sido actualizada ocn exito',
+                  text: 'Su contraseña ha sido actualizada con exito',
                 })
+                dispatch(changeMostrar(false))
               }
               
               console.log('Respuesta codigo de recuperacion',respuesta);
