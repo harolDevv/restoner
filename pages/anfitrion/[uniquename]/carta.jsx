@@ -23,13 +23,9 @@ import ModalAlert from '../../../components/modalAlert/ModalAlert'
 import { changeMostrar } from '../../../redux/reducers/modalAlertReducer'
 import { GetAllDirecciones } from '../../../redux/actions/usuarioAction'
 import axios from 'axios';
-import ZoomPlato from '../../../components/zoomPlato/zoomPlato'
-import dynamic from 'next/dynamic'
+import ZoomPlato from '../../../components/zoomPlato/ZoomPlato'
 import Swal from 'sweetalert2'
 
-const Map = dynamic(() => import('../../../components/Map/Map'), {
-  ssr: false,
-})
 
 
 const Carta = () => {
@@ -545,8 +541,7 @@ const Carta = () => {
       {
         zoomPlato !== "" ? 
         <ZoomPlato  zoomPlato={zoomPlato} setZoomPlato={setZoomPlato}/> : null
-      } 
-       
+      }
     </div>
   )
 }

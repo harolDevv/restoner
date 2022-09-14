@@ -58,7 +58,7 @@ const Map = ({latitude,longitude, nameBusiness, radius, UserUbication}) => {
     />
     {
       // [-12.1583405, -76.9885873]
-      UserUbication.latitude && UserUbication.longitude &&
+      UserUbication?.latitude && UserUbication?.longitude &&
       <Marker  ref={MarkRef} position={[ UserUbication.latitude , UserUbication.longitude]} icon={new Icon({iconUrl:'https://raw.githubusercontent.com/FaztWeb/react-leaflet-example/871b975703dec0ccd30ac56c96016af69cf7f0c0/src/assets/venue_location_icon.svg', iconSize: [50, 41], iconAnchor: [12, 41] , popupAnchor:[0,-39],})}>
     <Popup>
         Your ubication
@@ -68,7 +68,7 @@ const Map = ({latitude,longitude, nameBusiness, radius, UserUbication}) => {
 
     <Marker 
     position={[latitude, longitude]} 
-    icon={new Icon({iconUrl:'https://raw.githubusercontent.com/FaztWeb/react-leaflet-example/871b975703dec0ccd30ac56c96016af69cf7f0c0/src/assets/venue_location_icon.svg', iconSize: [50, 41], iconAnchor: [12, 41] , popupAnchor:[0,-39],})}>
+    icon={new Icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/2048/2048243.png', iconSize: [40, 40], iconAnchor: [12, 41] , popupAnchor:[0,-39],})}>
     <Popup>
         {nameBusiness}
     </Popup>

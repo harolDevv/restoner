@@ -18,12 +18,20 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Radio } from '@mui/material';
 import { getRangeUser } from '../../redux/reducers/RangoReducer';
+import dynamic from 'next/dynamic';
+import Script from 'next/script';
+// const latLng = dynamic(
+//   () => import('leaflet/'),
+//   {ssr: false}
+// )
 
-
-
-
+// const L = dynamic(
+//   () => import("leaflet/"),
+//   { ssr: false }
+// )
+import('leaflet').then(obj => L)
 const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
-  
+  const infoNegotion = useSelector(state => state.infoNegocio.infoNegocio.data)
   const direccionesUsuario = useSelector(state => state.infoUsuario.direccionesUsuario.data)
   const {usuario} = useSelector(state => state.infoUsuario)
   const dispatch = useDispatch()
@@ -38,7 +46,7 @@ const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
     fulladdress:'' ,
     reference:''
   })
-
+  const [UserUbication , setUserUbication ] = useState('')
   useEffect(() => {
     if(usuario?.data?.jwt){
       dispatch(GetAllDirecciones(usuario.data.jwt))
@@ -224,14 +232,11 @@ const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
       })
       setDireccionSeleccionada(initialStateDireccion)
       setModalDireccion(false)
-      dispatch((getRangeUser()))
-      dispatch(getRangeUser((circleRanges.circle_latlng).distanceTo({ lat:direccionSelecionada.latitude , lng:direccionSelecionada.longitude}) < (circleRanges.circle_radius)))
+      setUserUbication(direccionSelecionada)
+      if(L){
+        dispatch(getRangeUser(L.latLng(infoNegotion.address.latitude , infoNegotion.address.longitude).distanceTo({ lat:direccionSelecionada.latitude , lng:direccionSelecionada.longitude}) < (infoNegotion?.delivery.metters)))
+      }
     }
-
-      console.log(data)
-      console.log(value)
-      console.log(cordenadasMapa);
-
   return  estadoModal === 'Mapa' ? (
     <div className={styles.container_alert}>
         <div className={styles.container_modal_direccion}>
@@ -354,6 +359,8 @@ const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
             <button type='button' disabled={cordenadasMapa.name.length < 2} onClick={() => AddDirecction(usuario.data.jwt)}>Guardar direccion</button>
         </div>
       </div>
+      <Script src="js/leaflet/leaflet.js"></Script>  
+      <Script src="js/main.js"></Script>
     </div>
     )
 }
