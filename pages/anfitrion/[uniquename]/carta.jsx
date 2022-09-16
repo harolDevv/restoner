@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getInfoNegotion } from '../../../redux/actions/infoNegotionAction'
 import { getInfoCategoriesAction } from '../../../redux/actions/categoriesAction'
@@ -10,7 +10,6 @@ import Image from 'next/image'
 //iconos
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import { getPlatosDelDiaAction } from '../../../redux/actions/platosAction'
-import { style } from '@mui/system'
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
@@ -25,6 +24,7 @@ import { GetAllDirecciones } from '../../../redux/actions/usuarioAction'
 import axios from 'axios';
 import ZoomPlato from '../../../components/zoomPlato/ZoomPlato'
 import Swal from 'sweetalert2'
+import { apiConnection } from '../../../axios'
 
 
 
@@ -34,14 +34,13 @@ const Carta = () => {
   let dd = today.getDay() === 0 ? 7 : today.getDay()
   let formatDate = (new Date()).toDateString()
   const dispatch = useDispatch()
-  console.log(formatDate);
+
   let dia = today.getDate()
   let mes = today.getMonth() + 1
   let year = today.getFullYear()
   let fechaCompleta = `${year}-${mes}-${dia}`
   let fechaCompleta2 = `${year}/${mes}/${dia}`
-  console.log(fechaCompleta);
-  const circleRef = useRef('')
+
 
   const [modalDireccion, setModalDireccion] = useState(false)
 
@@ -91,7 +90,7 @@ const Carta = () => {
 
   const [zoomPlato , setZoomPlato] = useState("")
   
-  console.log( pedido);
+
   useEffect(() => {
     dispatch(getInfoNegotion(uniquename))
   }, [uniquename])
@@ -103,21 +102,18 @@ const Carta = () => {
   }, [usuario])
   
   useEffect(() => {
-    console.log('estoy en el useEfect de Rangos');
     if(data){
       dispatch(getAllRangos(data.idbusiness, fechaCompleta))
     }
   }, [data])
 
   useEffect(() => {
-    console.log('estoy en el useEfect');
       if(data) {
         dispatch(getInfoCategoriesAction(data.idbusiness , fechaCompleta))
       }
     }, [data])
 
   useEffect(() => {
-    console.log('estoy en el useEfect de platos');
       if(data) {
         dispatch(getPlatosDelDiaAction(data.idbusiness , fechaCompleta, 30))
       }
@@ -179,7 +175,6 @@ const Carta = () => {
             Authorization: `${token}`,
         }
       };
-      const now = (new Date()).toLocaleString(); 
       const hour = (new Date()).getHours()
       const minute = (new Date()).getMinutes()
       const second = (new Date()).getSeconds()
@@ -188,7 +183,6 @@ const Carta = () => {
     try {
       Swal.fire({
         title: '¿Estas seguro que deseas Enviar el pedido?',
-        text: "La dirección sera eliminada de forma permanente",
         icon: 'warning',
         iconColor: '#ff0d4a',
         showCancelButton: true,
@@ -198,7 +192,7 @@ const Carta = () => {
         cancelButtonText: 'Cancelar'
       }).then((result) => {
         if (result.isConfirmed) {
-            axios.post(
+            apiConnection.post(
               `http://c-a-pedidos.restoner-api.fun/v3/order/comensales`,
               pedido,
               config).then(
@@ -213,22 +207,6 @@ const Carta = () => {
           )
         }
       })
-          // const {data} = await axios.post(
-          //   `http://c-a-pedidos.restoner-api.fun/v3/order/comensales`,
-          //   pedido,
-          //   config
-          //   )
-           
-          //   if(data){
-          //     Swal.fire({
-          //       icon:'success',
-          //       title: 'Felicidades',
-          //       showConfirmButton: false,
-          //       timer: 1700,
-          //       text: 'Su pedido se envio con exito',
-          //     })
-              
-          //   }
     } catch (error) {
       
       Swal.fire({
@@ -248,9 +226,7 @@ const Carta = () => {
       }
       setModalDireccion(state => !state)
     }
-
-    console.log(isrestriction);
-    console.log(zoomPlato);
+    console.log(pedido);
   return (
   
     <div className={styles.carta_father_container}>
