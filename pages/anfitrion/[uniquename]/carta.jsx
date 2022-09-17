@@ -24,7 +24,7 @@ import { GetAllDirecciones } from '../../../redux/actions/usuarioAction'
 import axios from 'axios';
 import ZoomPlato from '../../../components/zoomPlato/ZoomPlato'
 import Swal from 'sweetalert2'
-import { apiConnection } from '../../../axios'
+import { apiConnection , apiPedido } from '../../../axios'
 
 
 
@@ -181,32 +181,26 @@ const Carta = () => {
       setPedido({...pedido , dateregistered: `${fechaCompleta} ${hour}:${minute}:${second}`})
 
     try {
-      Swal.fire({
-        title: '¿Estas seguro que deseas Enviar el pedido?',
-        icon: 'warning',
-        iconColor: '#ff0d4a',
-        showCancelButton: true,
-        confirmButtonColor: '#ff0d4a',
-        cancelButtonColor: '#88888a;',
-        confirmButtonText: 'Si, Enviar!',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        if (result.isConfirmed) {
-            apiConnection.post(
+    
+        
+            const data = await apiPedido.post(
               `http://c-a-pedidos.restoner-api.fun/v3/order/comensales`,
               pedido,
-              config).then(
-            Swal.fire({
-              icon:'success',
-              title: 'Felicidades!',
-              showConfirmButton: false,
-              timer: 1000,
-              text: 'El envio se envio con exito',
-              iconColor: '#ff0d4a'
-            })
-          )
-        }
-      })
+              config)
+              if(data){
+                Swal.fire({
+                  icon:'success',
+                  title: 'Felicidades',
+                  showConfirmButton: false,
+                  timer: 1700,
+                  text: 'Pedido enviado con exito',
+                })
+              }
+              else{
+                alert('error')
+              }
+        
+      
     } catch (error) {
       
       Swal.fire({
@@ -382,14 +376,14 @@ const Carta = () => {
         <div className={styles.selects_container}>
             <div>
             <h3>Servicio:</h3>
-              <select name="" id="">
+              <select name="" id="" onChange={(e) =>setPedido({...pedido ,  service: {idservice: data?.services[e.target.value].id , typemoney:data?.services[e.target.value].typemoney , price: data?.services[e.target.value].price}})}>
               {
-                  data?.services?.map(item => {
+                  data?.services?.map((item , index) => {
                     if(item.id !== 1){
                       return(
                         <option 
-                        onClick={() => setPedido({...pedido ,  service: {idservice:2 , typemoney: item.typemoney , price: item.price}})} 
-                        key={item.idschedule} value={item.showtocomensal}>
+                        onClick={() => setPedido({...pedido ,  service: {idservice: item.id , typemoney: item.typemoney , price: item.price}})} 
+                        key={item.idschedule} value={index}>
                           {item.name} (S/.{item.price})
                         </option>
                       )
@@ -421,11 +415,11 @@ const Carta = () => {
             </div>
             <div>
               <h3>Rango horario:</h3>
-              <select name="" id="">
+              <select name="" id="" onChange={(e) =>setPedido({...pedido ,  schedule: {idschedule: rangosHorarios[e.target.value].idschedule , timezone: rangosHorarios[e.target.value].timezone , endtime: rangosHorarios[e.target.value].endtime , starttime: rangosHorarios[e.target.value].starttime , daterequired: rangosHorarios[e.target.value].date , idcarta: rangosHorarios[e.target.value].idbusiness }})}>
               {
-                  rangosHorarios?.map(item => {
+                  rangosHorarios?.map((item , index) => {
                     return(
-                      <option onClick={() => setPedido({...pedido ,  schedule: {idschedule: item.idschedule , timezone: item.timezone , endtime: item.endtime , starttime: item.starttime , daterequired: item.date , idcarta: data.idbusiness }})} key={item.idschedule} value={item.showtocomensal}>{item.showtocomensal}</option>
+                      <option value={index} onClick={() => setPedido({...pedido ,  schedule: {idschedule: item.idschedule , timezone: item.timezone , endtime: item.endtime , starttime: item.starttime , daterequired: item.date , idcarta: data.idbusiness }})} key={item.idschedule}>{item.showtocomensal}</option>
                     )
                   })
                 }
@@ -433,11 +427,20 @@ const Carta = () => {
             </div>
             <div>
               <h3>Metodo de pago:</h3>
-              <select name="" id="">
+              <select name="" id="" onChange={(e) => setPedido(
+                {...pedido ,  payment: {
+                  idpayment: data?.paymentmethods[e.target.value].id,
+                  name: data?.paymentmethods[e.target.value].name,
+                  phonenumber: data?.paymentmethods[e.target.value].phonenumber,
+                  url: data?.paymentmethods[e.target.value].url,
+                  hasnumber: data?.paymentmethods[e.target.value].hasnumber
+               }}
+                )}>
                 {
-                  data?.paymentmethods?.map(item => {
+                  data?.paymentmethods?.map((item , index)=> {
                     return(
                       <option  
+                      value={index}
                       onClick={() => setPedido({...pedido ,  payment: {
                               idpayment: item.id,
                               name: item.name,
@@ -448,7 +451,7 @@ const Carta = () => {
                         }
                       )
                     } 
-                      key={item.id} value={item.name}>
+                      key={item.id}>
                         {item.name}
                         </option>
                     )
