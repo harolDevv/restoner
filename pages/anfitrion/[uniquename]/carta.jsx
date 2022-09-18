@@ -166,7 +166,25 @@ const Carta = () => {
 
 
 
-    const enviarPedidoUser = async(token) =>{
+    const findRoutes = async(token) =>{
+      const hour = (new Date()).getHours()
+      const minute = (new Date()).getMinutes()
+      const second = (new Date()).getSeconds()
+      let objPedido = {
+        dateregistered:`${fechaCompleta} ${hour}:${minute}:${second}`,
+        idstatus: 1,
+        schedule: pedido.schedule,
+        informationbusiness:pedido.informationbusiness,
+        addressbusiness: pedido.addressbusiness,
+        informationcomensal: pedido.addresscomensal,
+        addresscomensal:pedido.addresscomensal,
+        note: pedido.note,
+        service:pedido.service,
+        payment: pedido.payment,
+        datarejected:{},
+        elements: pedido.elements,
+        ismadebyweb: true,
+      }
       const config = {
         headers: { 
             Authorization: `${token}`,
@@ -174,11 +192,20 @@ const Carta = () => {
       };
       try {
         
-          if(pedido.dateregistered !== ''){
-
+        Swal.fire({
+          title: 'Esta seguro que desea enviar el pedido?',
+          icon: 'warning',
+          iconColor: '#ff0d4a',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Si, enviar!',
+          cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+          if (result.isConfirmed) {
             const data = await apiPedido.post(
               `http://c-a-pedidos.restoner-api.fun/v3/order/comensales`,
-              pedido,
+              objPedido,
               config)
               if(data){
                 Swal.fire({
@@ -189,9 +216,8 @@ const Carta = () => {
                   text: 'Pedido enviado con exito',
                 })
               }
-          } else { 
-            alert("fr")
-          }               
+          }
+        })          
         } catch (error) {
           console.log(error.response.data);
           Swal.fire({
@@ -209,12 +235,7 @@ const Carta = () => {
       if(usuario.length < 1){
         dispatch(changeMostrar(true))
       }
-    
-      
-      const hour = (new Date()).getHours()
-      const minute = (new Date()).getMinutes()
-      const second = (new Date()).getSeconds()
-      setPedido({...pedido , dateregistered: `${fechaCompleta} ${hour}:${minute}:${second}`} , enviarPedidoUser(token))
+      findRoutes(token)
     }
 
     const constAbrirModal = () => {
@@ -379,20 +400,21 @@ const Carta = () => {
         <div className={styles.selects_container}>
             <div>
             <h3>Servicio:</h3>
-              <select name="" id="" onChange={(e) =>setPedido({...pedido ,  service: {idservice: data?.services[e.target.value].id , typemoney:data?.services[e.target.value].typemoney , price: data?.services[e.target.value].price}})}>
-              {
-                  data?.services?.map((item , index) => {
-                    if(item.id !== 1){
-                      return(
-                        <option 
-                        onClick={() => setPedido({...pedido ,  service: {idservice: item.id , typemoney: item.typemoney , price: item.price}})} 
-                        key={item.idschedule} value={index}>
-                          {item.name} (S/.{item.price})
-                        </option>
-                      )
+              <select value='Seleccione una opcion' name="" id="" onChange={(e) =>setPedido({...pedido ,  service: {idservice: data?.services[e.target.value].id , typemoney:data?.services[e.target.value].typemoney , price: data?.services[e.target.value].price}})}>
+                <option hidden selected>Selecciona una opción</option>
+                  {
+                      data?.services?.map((item , index) => {
+                        if(item.id !== 1){
+                          return(
+                            <option 
+                            onClick={() => setPedido({...pedido ,  service: {idservice: item.id , typemoney: item.typemoney , price: item.price}})} 
+                            key={item.idschedule} value={index}>
+                              {item.name} (S/.{item.price})
+                            </option>
+                          )
+                        }
+                      })
                     }
-                  })
-                }
               </select>
             </div>
             <div className={styles.buttonDirecciones_container}>
@@ -426,6 +448,7 @@ const Carta = () => {
                     )
                   })
                 }
+                <option hidden selected>Selecciona una opción</option>
               </select>
             </div>
             <div>
@@ -460,6 +483,7 @@ const Carta = () => {
                     )
                   })
                 }
+                <option hidden selected>Selecciona una opción</option>
               </select>
             </div>
         </div>
