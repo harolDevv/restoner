@@ -31,4 +31,7 @@ export const apiRecuperar = axios.create({
   });
 export const apiPedido = axios.create({
     baseURL: DEV_PEDIDO,
+    headers: {
+      'apikey' : apikey
+    }
   });

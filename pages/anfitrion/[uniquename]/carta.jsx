@@ -165,24 +165,17 @@ const Carta = () => {
      }, [carrito])
 
 
-    const handleEnviarPedido = async (token) => { 
-      if(usuario.length < 1){
-        dispatch(changeMostrar(true))
-      }
-      
+
+    const enviarPedidoUser = async(token) =>{
       const config = {
         headers: { 
             Authorization: `${token}`,
         }
       };
-      const hour = (new Date()).getHours()
-      const minute = (new Date()).getMinutes()
-      const second = (new Date()).getSeconds()
-      setPedido({...pedido , dateregistered: `${fechaCompleta} ${hour}:${minute}:${second}`})
-
-    try {
-    
+      try {
         
+          if(pedido.dateregistered !== ''){
+
             const data = await apiPedido.post(
               `http://c-a-pedidos.restoner-api.fun/v3/order/comensales`,
               pedido,
@@ -196,22 +189,32 @@ const Carta = () => {
                   text: 'Pedido enviado con exito',
                 })
               }
-              else{
-                alert('error')
-              }
-        
-      
-    } catch (error) {
-      
-      Swal.fire({
-        icon:'error',
-        title: 'Ups...',
-        showConfirmButton: false,
-        timer: 1700,
-        text: 'Hubo un error con su pedido',
-      })
+          } else { 
+            alert("fr")
+          }               
+        } catch (error) {
+          console.log(error.response.data);
+          Swal.fire({
+            icon:'error',
+            title: 'Ups...',
+            showConfirmButton: false,
+            timer: 1700,
+            text: 'Hubo un error con su pedido',
+          })
+        }
+
     }
 
+    const handleEnviarPedido = async (token) => { 
+      if(usuario.length < 1){
+        dispatch(changeMostrar(true))
+      }
+    
+      
+      const hour = (new Date()).getHours()
+      const minute = (new Date()).getMinutes()
+      const second = (new Date()).getSeconds()
+      setPedido({...pedido , dateregistered: `${fechaCompleta} ${hour}:${minute}:${second}`} , enviarPedidoUser(token))
     }
 
     const constAbrirModal = () => {
