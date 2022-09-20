@@ -18,18 +18,10 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Radio } from '@mui/material';
 import { getRangeUser } from '../../redux/reducers/RangoReducer';
-import dynamic from 'next/dynamic';
 import Script from 'next/script';
-// const latLng = dynamic(
-//   () => import('leaflet/'),
-//   {ssr: false}
-// )
+typeof window !== "undefined" ? 
+import('leaflet').then(obj => L) : null 
 
-// const L = dynamic(
-//   () => import("leaflet/"),
-//   { ssr: false }
-// )
-import('leaflet').then(obj => L)
 const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
   const infoNegotion = useSelector(state => state.infoNegocio.infoNegocio.data)
   const direccionesUsuario = useSelector(state => state.infoUsuario.direccionesUsuario.data)
@@ -105,14 +97,14 @@ const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
 
       const handleSelect1 = (val , description ,place_id) => {
           setValue(val, false);
-          console.log('entreee1111111111111');
+       
           let state;
           let country;
         getGeocode({ address: description }).then((results) => {
             const { lat, lng } = getLatLng(results[0]);
             const zipCode = getZipCode(results[0], false);
-            console.log("ZIP Code: ", zipCode);
-            console.log("📍 Coordinates: ", { lat, lng });
+            // console.log("ZIP Code: ", zipCode);
+            // console.log("📍 Coordinates: ", { lat, lng });
             setCordenadasMapa(
               { latitude: lat , 
                 longitude:lng, 
@@ -128,7 +120,7 @@ const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
 
           getDetails({ placeId: place_id})
           .then((details) => {
-            console.log(details);
+           
             details.address_components.forEach(item => {
               if(item.types.includes('locality')){
                  state = item.short_name
@@ -139,14 +131,9 @@ const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
             })
           })
           .catch((error) => {
-            console.log("Error: ", error);
+            
           });
       };
-
-      const handleLogin = (datos) =>  {
-        e.preventDefault();
-        console.log(datos);
-      }
 
       const handleTuDirectionSelect = e => {
         setSelectedDirection({ checked : e.target.value})
@@ -177,7 +164,7 @@ const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
                 ).
                 then(setEstadoModal('Tus direcciones'))
         } catch (error) {
-          console.log(error);
+        
         }
     }
       const deleteDirecction = async (token , idAddress) =>  {
@@ -216,7 +203,7 @@ const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
                     }
                   })
         } catch (error) {
-          console.log(error);
+         
         }
     }
 
@@ -277,7 +264,7 @@ const ModalDireccion = ({setModalDireccion , setPedido , pedido}) => {
       <div className={styles.container_alert}>
       <div className={styles.container_modal_direccion}>
         <CloseRoundedIcon className={styles.close_modal_direction} onClick={() => setModalDireccion(false)}/>
-          <form action={handleLogin} className={styles.form_container_direcciones}>
+          <form  className={styles.form_container_direcciones}>
             <div className={styles.tusDirecciones_container}>
               {
                 direccionesUsuario.length > 0 ?

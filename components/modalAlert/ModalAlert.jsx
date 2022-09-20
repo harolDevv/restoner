@@ -18,6 +18,7 @@ import { getAllInfoUser } from '../../redux/actions/usuarioAction';
 import { useDispatch } from 'react-redux';
 import { changeMostrar } from '../../redux/reducers/modalAlertReducer';
 import Swal from 'sweetalert2';
+import { Radio } from '@mui/material';
 
 
 
@@ -192,7 +193,7 @@ const handleNextStep3 = async () => {
         password: formInicioSesion.password
       }
         try {
-              await dispatch(getAllInfoUser(objIngresar))
+              await dispatch(getAllInfoUser(objIngresar,  rememberMe))
         } catch (error) {
               setError('Numero y/o Contraseña incorrectos');
         }
@@ -294,10 +295,9 @@ const handleNextStep3 = async () => {
     }
   }
 
-  console.log('Sesion',formInicioSesion);
-  console.log('registro',formInicioRegister);                                                           
-  console.log('codigo', formCode);
-  console.log('recuperar' , formRecuperarCuenta);
+  const handleRememberMeChange = (e) => setRememberMe(e.target.checked);
+
+  console.log(rememberMe);
 
   return (
     <div className={styles.container_alert}>
@@ -332,8 +332,24 @@ const handleNextStep3 = async () => {
             {
               Error ? <span className={styles.span_error}><ErrorOutlineRoundedIcon/> {Error}</span> : null
             }
-            <label ><input type="checkbox"/> Recuerdame</label>
-            <button type='button' className={styles.button_recuperar} onClick={() => setModal('Recuperar')}>¿Olvidaste tu contraseña?</button>
+            <div className={styles.Recover_Account_container}>
+              <label className={styles.label_rememberMe} >
+
+              <Radio  
+                      className={styles.inputRemember}
+                      onClick={() => setRememberMe(state => !state)}
+                      checked={rememberMe}
+                      sx={{
+                        color: "black",
+                        "&.Mui-checked": {
+                          color: "#FF0D4A",
+                        },
+                      }} />
+                 {/* //<input type="checkbox" onChange={() => setRememberMe(state => !state)}/>  */}
+                
+                Recuerdame</label>
+              <button type='button' className={styles.button_recuperar} onClick={() => setModal('Recuperar')}>¿Olvidaste tu contraseña?</button>
+            </div>
             <button type='button' className={styles.button_registrarme}  onClick={() => setModal('register')} >Registrarme</button>
             <button 
             type='button' 

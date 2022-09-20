@@ -228,7 +228,7 @@ const Carta = () => {
           }
         })          
         } catch (error) {
-          console.log(error.response.data);
+          
           Swal.fire({
             icon:'error',
             title: 'Ups...',
@@ -267,8 +267,7 @@ const Carta = () => {
       return fecha
     }
     
-    console.log(today1 , 'today1');
-    console.log(today , 'today');
+   
   return (
   
     <div className={styles.carta_father_container}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 //modules styles
 import styles from './navbar.module.scss'
 
@@ -14,13 +14,17 @@ import Swal from 'sweetalert2'
 import Logo from '../../public/images/Restoner.png'
 import Image from 'next/image'
 import ModalAlert from '../modalAlert/ModalAlert';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllInfoUser } from '../../redux/actions/usuarioAction';
 
 
 const Navbar = () => {
-
+  const dispatch = useDispatch()
   const [ mostrarModalSesion , setMostrarModalSesion ]  = useState(false)
   const {mostrarModal} = useSelector(state => state.mostrarModal)
+  useEffect(() => {
+    dispatch(getAllInfoUser())
+  } , [])
   return (
     <div className={styles.Navbar_container}>
       <div className={styles.Navbar_firstChild}>

@@ -7,20 +7,28 @@ import { changeMostrar } from '../../redux/reducers/modalAlertReducer';
 
 
 export const getAllInfoUser = (objIngresar, rememberMe) => async (dispatch) => {
-    try {
-        const {data} = await apiRegistro.post(`http://c-registro-authenticacion.restoner-api.fun/v1/login ` , objIngresar)
-        dispatch(getInfoUsuario(data))
-        if(rememberMe){
-            localStorage.setItem('login' , JSON.stringify(data))
+        const storeInfo = JSON.parse(localStorage.getItem("loginRestoner"));
+        console.log(storeInfo);
+        if(storeInfo){
+            return dispatch(getInfoUsuario(storeInfo))
         }
-        Swal.fire({
-            icon:'success',
-            title: 'Bienvenido',
-            showConfirmButton: false,
-            timer: 1700,
-            text: 'Ingresaste a tu cuenta :,)',
-          })
-          dispatch(changeMostrar(false))
+    try {
+       if(objIngresar){ 
+
+            const {data} = await apiRegistro.post(`http://c-registro-authenticacion.restoner-api.fun/v1/login ` , objIngresar)
+            dispatch(getInfoUsuario(data))
+            if(rememberMe){
+                localStorage.setItem('loginRestoner' , JSON.stringify(data))
+            }
+            Swal.fire({
+                icon:'success',
+                title: 'Bienvenido',
+                showConfirmButton: false,
+                timer: 1700,
+                text: 'Ingresaste a tu cuenta :,)',
+            })
+            dispatch(changeMostrar(false))
+        }
     } catch (error) {
         Swal.fire({
             icon:'error',
@@ -42,6 +50,7 @@ export const CerrarSesion = () => async (dispatch) => {
             text: 'Nos vemos pronto <3',
             iconColor: '#ff0d4a'
           })
+          localStorage.removeItem('loginRestoner')
         return dispatch(closeSesion())
     } catch (error) {
     }

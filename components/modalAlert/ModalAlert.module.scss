@@ -17,6 +17,17 @@ $primary_color: #ff0d4a;
     align-items:center;
     justify-content:center;
     .modal_sesion{
+        .Recover_Account_container{
+            display: flex;
+            width: 100%;
+            margin: 20px 0px;
+            .label_rememberMe{
+                width: 100%;
+                display: flex;
+                align-items: center;
+                user-select: none;
+            }
+        }
         h3{
             font-size: 20px;
         }
@@ -52,15 +63,16 @@ $primary_color: #ff0d4a;
             }
         }
         .button_recuperar{
-            margin: 10px;
             color: $primary_color;
-            width: 100%;
             background-color: white;
             border: none;
-            font-size: 18px;
-            padding: 8px;
-            border-radius: 10px;
+            font-size: 17px;
             cursor: pointer;
+            width: 100%;
+            padding: 0;
+            &:hover{     
+                text-decoration: underline;
+            }
         }
         .button_registrarme{
             margin: 10px;

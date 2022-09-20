@@ -100,7 +100,7 @@ const ProductInfo = () => {
                     {`
                     .banner_container{
                         height: 200px;
-                        background-image: url('${data?.banners[0].url}');
+                        background-image: url('${data?.banners[0]?.url}');
                         background-position: center;
                         background-size: cover;
                         border-radius: 5px 5px 0px 0px;
