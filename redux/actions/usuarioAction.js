@@ -6,11 +6,13 @@ import { changeMostrar } from '../../redux/reducers/modalAlertReducer';
 
 
 
-export const getAllInfoUser = (objIngresar) => async (dispatch) => {
+export const getAllInfoUser = (objIngresar, rememberMe) => async (dispatch) => {
     try {
         const {data} = await apiRegistro.post(`http://c-registro-authenticacion.restoner-api.fun/v1/login ` , objIngresar)
         dispatch(getInfoUsuario(data))
-
+        if(rememberMe){
+            localStorage.setItem('login' , JSON.stringify(data))
+        }
         Swal.fire({
             icon:'success',
             title: 'Bienvenido',

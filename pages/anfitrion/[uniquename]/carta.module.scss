@@ -12,13 +12,25 @@ $primary_color: #ff0d4a;
     .header_section{
         grid-template-rows: 1fr 1fr;
         background-color: #F7F7F7;
+        .fechaActualText_text{
+            color: $primary_color;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            svg{
+                margin-right: 5px;
+            }
+        }
         .fecha_completa_container{
                 display: flex;
                 align-items: center;
             button{
                 background-color: transparent;
                 color: black; 
-                
+                &:disabled{
+                    color: rgb(197, 197, 197);
+                }
             }
         }
         a{
@@ -63,6 +75,13 @@ $primary_color: #ff0d4a;
         background-color: #F7F7F7;
         height: 120vh;
         overflow-x: auto;
+        .NoPlatosModal_container{
+            margin-top: 10px;
+            background-color: #F7F7F7;
+            border: 1px solid #dbdbdb;
+            padding: 10px;
+            border-radius: 10px;
+        }
         .plato_categories_container{
             .platos_container{
                 display: flex;

@@ -26,10 +26,11 @@ const ModalAlert = ({setMostrarModalSesion}) => {
   const [modal , setModal] = useState('sesion')
   const [contador , setContador] = useState(1)
   const [contadorRecuperar , setContadorRecuperar] = useState(1)
-
+  const [rememberMe , setRememberMe] = useState(false)
   useEffect(() => {
     setContador(1)
     setContadorRecuperar(1)
+    setRememberMe(false)
   }, [modal])
 
   //estods de recuperar contraseña
@@ -331,6 +332,7 @@ const handleNextStep3 = async () => {
             {
               Error ? <span className={styles.span_error}><ErrorOutlineRoundedIcon/> {Error}</span> : null
             }
+            <label ><input type="checkbox"/> Recuerdame</label>
             <button type='button' className={styles.button_recuperar} onClick={() => setModal('Recuperar')}>¿Olvidaste tu contraseña?</button>
             <button type='button' className={styles.button_registrarme}  onClick={() => setModal('register')} >Registrarme</button>
             <button 

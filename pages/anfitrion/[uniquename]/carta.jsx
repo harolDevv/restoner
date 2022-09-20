@@ -13,6 +13,7 @@ import { getPlatosDelDiaAction } from '../../../redux/actions/platosAction'
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 //acciones del carrito
 import { addToCart, clearCart, deleteFromCart } from '../../../redux/actions/productosCarritoAction'
 import { getAllRangos } from '../../../redux/actions/rangosHorariosAction'
@@ -30,11 +31,13 @@ import { apiConnection , apiPedido } from '../../../axios'
 
 const Carta = () => {
   let contador = 0;
+  const [today1 , setToday1 ] = useState(new Date())
+  
+  const dateDosdias = new Date( (new Date()).setDate((new Date()).getDate() + 2)) 
   let today = new Date()
   let dd = today.getDay() === 0 ? 7 : today.getDay()
   let formatDate = (new Date()).toDateString()
   const dispatch = useDispatch()
-
   let dia = today.getDate()
   let mes = today.getMonth() + 1
   let year = today.getFullYear()
@@ -115,9 +118,15 @@ const Carta = () => {
 
   useEffect(() => {
       if(data) {
-        dispatch(getPlatosDelDiaAction(data.idbusiness , fechaCompleta, 30))
+        dispatch(getPlatosDelDiaAction(data.idbusiness , `${today1.getFullYear()}-${today1.getMonth() + 1}-${today1.getDate()}`, 30))
       }
     }, [data])
+
+  useEffect(() => {
+      if(data) {
+        dispatch(getPlatosDelDiaAction(data.idbusiness , `${today1.getFullYear()}-${today1.getMonth() + 1}-${today1.getDate()}`, 30))
+      }
+    }, [today1])
     
     useEffect(() => {
       if(data){
@@ -244,7 +253,22 @@ const Carta = () => {
       }
       setModalDireccion(state => !state)
     }
-    console.log(pedido);
+
+    const constModificarFechaSuma = () => {
+      let fecha = new Date(today1)
+      fecha.setDate(fecha.getDate() + 1);
+      setToday1(fecha)
+      return fecha
+    }
+    const constModificarFechaResta = () => {
+      let fecha = new Date(today1)
+      fecha.setDate(fecha.getDate() - 1);
+      setToday1(fecha)
+      return fecha
+    }
+    
+    console.log(today1 , 'today1');
+    console.log(today , 'today');
   return (
   
     <div className={styles.carta_father_container}>
@@ -273,14 +297,32 @@ const Carta = () => {
           PM
           </span>
           <section className={styles.fecha_completa_container}>
-            <button>
+            <button  onClick={() =>  constModificarFechaResta()} 
+            disabled={
+              today.getFullYear() == today1.getFullYear() &&
+              today.getMonth() == today1.getMonth() &&
+              today.getDate() == today1.getDate() 
+              }>
               <ArrowBackIosNewRoundedIcon/>
             </button>
-            {fechaCompleta2}
-            <button>
+           { `${today1.getFullYear()}/${today1.getMonth() + 1}/${today1.getDate()}`}
+            <button onClick={() =>  constModificarFechaSuma()}
+            disabled={
+              today1.getFullYear() == dateDosdias.getFullYear() &&
+              today1.getMonth() == dateDosdias.getMonth() &&
+              today1.getDate() == dateDosdias.getDate() 
+            }
+            >
               <ArrowForwardIosRoundedIcon/>
             </button>
           </section>
+          {
+            today.getFullYear() == today1.getFullYear() &&
+            today.getMonth() == today1.getMonth() &&
+            today.getDate() == today1.getDate() ? 
+            <p className={styles.fechaActualText_text}><CheckCircleRoundedIcon/> Fecha actual</p> : 
+            null
+          }
         </div>
        
         <div>
@@ -347,7 +389,9 @@ const Carta = () => {
             )
           }) 
           
-          : null
+          : <div className={styles.NoPlatosModal_container}>
+            <p>No hay platos disponibles para esta fecha :(</p>
+          </div>
         }
       </section>
       <section className={styles.platos_escogidos_container}>
